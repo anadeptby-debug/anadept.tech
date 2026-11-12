@@ -1,0 +1,47 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const p = t.process;
+---
+<section class="process" id="process">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">{p.eyebrow}</span>
+      <h2>{p.title}</h2>
+    </div>
+    <ol class="ladder">
+      {p.steps.map((s, i) => (
+        <li class="reveal" style={`transition-delay:${i * 60}ms`} data-cursor={s.cursor} tabindex="0">
+          <span class="n">{s.n}</span>
+          <h3>{s.t}</h3>
+          <p>{s.d}</p>
+          <span class="time">{s.time}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .ladder { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-2); }
+  .ladder li {
+    display: grid; grid-template-columns: 80px 1fr 1.4fr 140px; gap: 24px; align-items: baseline;
+    padding: 30px 0; border-bottom: 1px solid var(--line-2); position: relative;
+    transition: padding .5s var(--ease);
+  }
+  .ladder li::before {
+    content: ''; position: absolute; inset: 0; background: var(--ink); transform: scaleY(0); transform-origin: bottom;
+    transition: transform .5s var(--ease); z-index: -1; border-radius: 4px;
+  }
+  .ladder li:hover, .ladder li:focus { padding-left: 24px; padding-right: 24px; color: var(--milk); outline: none; }
+  .ladder li:hover::before, .ladder li:focus::before { transform: scaleY(1); }
+  .ladder li:hover p, .ladder li:focus p, .ladder li:hover .time, .ladder li:hover .n { color: #b6b2aa; }
+  .process { isolation: isolate; }
+  .n { font-size: 14px; color: var(--faint); }
+  .ladder p { color: var(--muted); transition: color .3s; }
+  .time { text-align: right; font-size: 15px; color: var(--ink-2); }
+  @media (max-width: 820px) {
+    .ladder li { grid-template-columns: 48px 1fr; gap: 8px 16px; }
+    .ladder p, .time { grid-column: 2; text-align: left; }
+  }
+</style>

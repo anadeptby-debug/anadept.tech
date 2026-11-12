@@ -1,0 +1,120 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const h = t.hero;
+---
+<section class="hero">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-txt">
+      <span class="pill reveal"><span class="dot"></span>{h.pill}</span>
+      <h1>
+        {h.title.map((line, i) => (
+          <span class="line"><span class="line-in" style={`--d:${i * 0.12}s`}>{line}</span></span>
+        ))}
+      </h1>
+      <p class="lead reveal">{h.lead}</p>
+      <div class="hero-cta reveal">
+        <a href="#contact" class="btn" data-magnetic data-cursor={h.cursorCta}>{h.cta}<span class="arr">→</span></a>
+        <a href="#audit" class="btn ghost">{h.cta2}</a>
+      </div>
+    </div>
+
+    <div class="agent card reveal" data-cursor={h.flowTitle}>
+      <div class="agent-top">
+        <span class="eyebrow">{h.flowTitle}</span>
+        <span class="dot live"></span>
+      </div>
+      <ol class="agent-steps">
+        {h.flow.map((s, i) => (
+          <li data-i={i}>
+            <span class="tick"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div><b>{s.t}</b><small>{s.s}</small></div>
+          </li>
+        ))}
+      </ol>
+      <div class="agent-stats">
+        {h.flowStats.map((s) => <div><b>{s.v}</b><small>{s.l}</small></div>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-in">
+      {[...t.marquee, ...t.marquee].map((m) => <span>{m}</span>)}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Glow follows the mouse
+  const hero = document.querySelector<HTMLElement>('.hero')!;
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    hero.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    hero.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+
+  // Agent steps loop
+  const items = [...document.querySelectorAll<HTMLElement>('.agent-steps li')];
+  let k = 0;
+  const tick = () => {
+    items.forEach((li, i) => {
+      li.classList.toggle('done', i < k);
+      li.classList.toggle('active', i === k);
+    });
+    k = (k + 1) % (items.length + 2);
+  };
+  tick(); setInterval(tick, 1300);
+</script>
+
+<style>
+  .hero { padding-top: clamp(40px, 7vw, 96px); padding-bottom: 0; overflow: hidden; --mx: 30%; --my: 40%; }
+  .glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(600px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 14%, transparent), transparent 60%);
+    transition: background .2s;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; position: relative; }
+  .hero-txt { display: grid; gap: 28px; justify-items: start; }
+  h1 { display: grid; }
+  .line { display: block; overflow: hidden; padding-bottom: .06em; }
+  .line-in { display: block; transform: translateY(105%); animation: up 1s var(--ease) forwards; animation-delay: var(--d); }
+  .line:last-child .line-in { color: var(--muted); }
+  @keyframes up { to { transform: none; } }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .agent { padding: 24px; display: grid; gap: 18px; border-radius: var(--radius-l); }
+  .agent-top { display: flex; justify-content: space-between; align-items: center; }
+  .agent-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .agent-steps li {
+    display: flex; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 14px;
+    border: 1px solid var(--line); background: var(--milk); opacity: .45;
+    transition: opacity .5s, background .5s, border-color .5s, transform .5s var(--ease);
+  }
+  .agent-steps li b { display: block; font-weight: 500; font-size: 15px; }
+  .agent-steps li small { color: var(--muted); font-size: 13px; }
+  .agent-steps li.done { opacity: 1; }
+  .agent-steps li.active { opacity: 1; background: var(--paper); border-color: var(--ink); transform: translateX(6px); }
+  .tick {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid var(--line-2); color: transparent; transition: all .4s;
+  }
+  .tick svg { width: 14px; }
+  .done .tick { background: var(--ink); border-color: var(--ink); color: var(--milk); }
+  .active .tick { border-color: var(--accent); background: var(--accent-soft); animation: spin 1.3s linear infinite; border-top-color: transparent; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .agent-stats { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--ink); color: var(--milk); border-radius: 14px; overflow: hidden; }
+  .agent-stats div { padding: 16px 10px; text-align: center; border-left: 1px solid #333; }
+  .agent-stats div:first-child { border-left: 0; }
+  .agent-stats b { display: block; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .agent-stats small { color: #9a9790; font-size: 12px; }
+
+  .marquee { margin-top: clamp(64px, 9vw, 120px); border-block: 1px solid var(--line); overflow: hidden; padding: 22px 0; }
+  .marquee-in { display: flex; gap: 56px; width: max-content; animation: mq 40s linear infinite; }
+  .marquee-in span { font-size: 18px; color: var(--muted); white-space: nowrap; }
+  .marquee:hover .marquee-in { animation-play-state: paused; }
+  @keyframes mq { to { transform: translateX(-50%); } }
+
+  @media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; } }
+</style>

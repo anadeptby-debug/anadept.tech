@@ -1,0 +1,190 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const a = t.audit;
+---
+<section class="audit" id="audit">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">{a.eyebrow}</span>
+      <h2>{a.title}</h2>
+      <p class="lead">{a.lead}</p>
+    </div>
+
+    <div class="win card reveal" data-audit={JSON.stringify(a)}>
+      <div class="win-bar">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="url">{a.bar}</span>
+        <span class="live"><span class="dot live"></span>{a.live}</span>
+      </div>
+      <div class="win-body">
+        <label class="eyebrow" for="audit-in">{a.label}</label>
+        <textarea id="audit-in" rows="3" placeholder={a.placeholder}></textarea>
+        <div class="presets">
+          {a.presets.map((p, i) => <button type="button" class="chip" data-p={i} aria-pressed="false">{p.k}</button>)}
+        </div>
+        <p class="or">— {a.or}</p>
+        <div class="run-row">
+          <button type="button" class="btn run" data-magnetic><span class="arr">→</span>{a.run}</button>
+          <span class="kbd">{a.kbd}</span>
+        </div>
+
+        <div class="out" hidden>
+          <div class="progress"><span></span></div>
+          <p class="status"></p>
+          <div class="res" hidden>
+            <div class="res-col">
+              <span class="eyebrow">{a.resBottlenecks}</span>
+              <ul class="bn"></ul>
+            </div>
+            <div class="res-col">
+              <span class="eyebrow">{a.resFlow}</span>
+              <div class="flow"></div>
+              <div class="hours"><b>0</b><span>{a.resHours}</span></div>
+            </div>
+            <div class="verdict">
+              <span class="eyebrow">{a.resVerdict}</span>
+              <p class="vtext"></p>
+              <a href="#contact" class="btn accent" data-magnetic>{a.resCta}<span class="arr">→</span></a>
+            </div>
+          </div>
+          <p class="disc">{a.disclaimer}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  type Rule = { re: string; name: string; fix: string; h: number };
+  const root = document.querySelector<HTMLElement>('[data-audit]')!;
+  const A = JSON.parse(root.dataset.audit!);
+  const ta = root.querySelector<HTMLTextAreaElement>('textarea')!;
+  const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
+  const out = root.querySelector<HTMLElement>('.out')!;
+  const bar = root.querySelector<HTMLElement>('.progress span')!;
+  const status = root.querySelector<HTMLElement>('.status')!;
+  const res = root.querySelector<HTMLElement>('.res')!;
+  const bn = root.querySelector<HTMLElement>('.bn')!;
+  const flow = root.querySelector<HTMLElement>('.flow')!;
+  const hoursEl = root.querySelector<HTMLElement>('.hours b')!;
+  const vtext = root.querySelector<HTMLElement>('.vtext')!;
+
+  chips.forEach((c) => c.addEventListener('click', () => {
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+    typeInto(A.presets[+c.dataset.p!].v);
+  }));
+  ta.addEventListener('input', () => chips.forEach((x) => x.setAttribute('aria-pressed', 'false')));
+
+  let typing = 0;
+  function typeInto(text: string) {
+    const id = ++typing; ta.value = ''; let i = 0;
+    const step = () => {
+      if (id !== typing) return;
+      ta.value = text.slice(0, i += 3);
+      if (i < text.length) setTimeout(step, 14);
+    };
+    step();
+  }
+
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+  function analyse(text: string) {
+    const low = text.toLowerCase();
+    const hits: Rule[] = (A.rules as Rule[]).filter((r) => new RegExp(r.re, 'i').test(low));
+    return hits;
+  }
+
+  function countUp(el: HTMLElement, to: number) {
+    const t0 = performance.now();
+    const f = (now: number) => {
+      const p = Math.min(1, (now - t0) / 900);
+      el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(f);
+    };
+    requestAnimationFrame(f);
+  }
+
+  let running = false;
+  async function run() {
+    if (running) return;
+    const text = ta.value.trim();
+    out.hidden = false; res.hidden = true; running = true;
+    bar.style.width = '0%';
+    for (let i = 0; i < A.running.length; i++) {
+      status.textContent = A.running[i];
+      bar.style.width = `${((i + 1) / A.running.length) * 100}%`;
+      await new Promise((r) => setTimeout(r, 420));
+    }
+    status.textContent = '';
+    const hits = text.length > 20 ? analyse(text) : [];
+    bn.innerHTML = hits.length
+      ? hits.map((h, i) => `<li style="animation-delay:${i * 90}ms"><b>${esc(h.name)}</b><span>${esc(h.fix)}</span></li>`).join('')
+      : `<li><span>${esc(A.verdictEmpty)}</span></li>`;
+    const N = A.flowNodes;
+    flow.innerHTML = [N.in, N.agent, N.human, N.out]
+      .map((n: string, i: number) => `<div class="node n${i}" style="animation-delay:${i * 140}ms">${esc(n)}</div>`)
+      .join('<i class="arrow">↓</i>');
+    const hours = hits.reduce((s, h) => s + h.h, 0);
+    countUp(hoursEl, hours);
+    vtext.textContent = !hits.length ? A.verdictEmpty : hits.length <= 1 ? A.verdictSaas : A.verdictPilot;
+    res.hidden = false; running = false;
+    out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  root.querySelector('.run')!.addEventListener('click', run);
+  ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) run(); });
+</script>
+
+<style>
+  .win { border-radius: var(--radius-l); overflow: hidden; }
+  .win-bar { display: flex; align-items: center; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--milk); }
+  .lights { display: flex; gap: 7px; }
+  .lights i { width: 11px; height: 11px; border-radius: 50%; background: #e8a68c; }
+  .lights i:nth-child(2) { background: #ddd6c8; }
+  .lights i:nth-child(3) { background: #a9c1e8; }
+  .url { color: var(--muted); font-size: 14px; }
+  .live { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; font-size: 14px; padding: 6px 14px; border: 1px solid var(--line-2); border-radius: 999px; }
+  .win-body { padding: clamp(20px, 4vw, 44px); display: grid; gap: 16px; }
+  textarea {
+    width: 100%; resize: vertical; min-height: 120px; padding: 18px 22px; border-radius: 18px;
+    border: 1px solid var(--line-2); background: var(--milk); font-size: 17px; line-height: 1.5; outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  textarea:focus { border-color: var(--ink); background: var(--paper); }
+  .presets { display: flex; flex-wrap: wrap; gap: 10px; }
+  .or { font-size: 14px; color: var(--faint); }
+  .run-row { display: flex; align-items: center; gap: 18px; }
+  .run { padding: 18px 30px; }
+
+  .out { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 28px; display: grid; gap: 20px; }
+  .progress { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .4s var(--ease); }
+  .status { color: var(--muted); font-size: 15px; min-height: 1em; }
+  .res { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; }
+  .res-col { display: grid; gap: 14px; align-content: start; }
+  .bn { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .bn :global(li) {
+    display: grid; gap: 2px; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--line);
+    background: var(--milk); animation: pop .5s var(--ease) both;
+  }
+  .bn :global(li b) { font-weight: 500; }
+  .bn :global(li span) { color: var(--muted); font-size: 15px; }
+  .flow { display: grid; justify-items: center; gap: 4px; }
+  .flow :global(.node) {
+    width: 100%; text-align: center; padding: 12px; border-radius: 12px; border: 1px solid var(--line-2);
+    background: var(--paper); font-size: 15px; animation: pop .5s var(--ease) both;
+  }
+  .flow :global(.n1) { background: var(--ink); color: var(--milk); border-color: var(--ink); }
+  .flow :global(.n2) { border-style: dashed; }
+  .flow :global(.n3) { background: var(--accent-soft); border-color: transparent; }
+  .flow :global(.arrow) { font-style: normal; color: var(--faint); font-size: 14px; }
+  .hours { display: flex; align-items: baseline; gap: 12px; padding: 18px 20px; border-radius: 14px; background: var(--ink); color: var(--milk); }
+  .hours b { font-size: 44px; font-weight: 500; letter-spacing: -0.04em; line-height: 1; }
+  .hours span { color: #a5a29b; font-size: 14px; }
+  .verdict { grid-column: 1 / -1; display: grid; gap: 12px; justify-items: start; padding: 24px; border-radius: 18px; background: var(--milk-2); }
+  .vtext { font-size: 18px; max-width: 760px; }
+  .disc { font-size: 13px; color: var(--faint); }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+  @media (max-width: 760px) { .res { grid-template-columns: 1fr; } .url { display: none; } }
+</style>

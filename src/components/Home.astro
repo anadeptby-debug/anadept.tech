@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Problem from './Problem.astro';
+import Audit from './Audit.astro';
+import Cases from './Cases.astro';
+import Roi from './Roi.astro';
+import Process from './Process.astro';
+import Principles from './Principles.astro';
+import Pricing from './Pricing.astro';
+import Faq from './Faq.astro';
+import Contact from './Contact.astro';
+import { dict, type Lang } from '../i18n/content';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = dict[lang];
+---
+<Base lang={lang} t={t}>
+  <Header t={t} />
+  <main>
+    <Hero t={t} />
+    <Problem t={t} />
+    <Audit t={t} />
+    <Cases t={t} />
+    <Roi t={t} />
+    <Process t={t} />
+    <Principles t={t} />
+    <Pricing t={t} />
+    <Faq t={t} />
+    <Contact t={t} />
+  </main>
+  <footer class="ftr">
+    <div class="wrap ftr-in">
+      <span class="logo">anadept<span class="logo-dot"></span></span>
+      <span>{t.footer.tag}</span>
+      <span>{t.footer.rights}</span>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .ftr { padding: 40px 0 88px; color: var(--muted); font-size: 14px; }
+  .ftr-in { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
+  .logo { font-weight: 600; font-size: 20px; letter-spacing: -0.04em; color: var(--ink); display: inline-flex; align-items: flex-end; gap: 2px; }
+  .logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-bottom: 5px; }
+</style>

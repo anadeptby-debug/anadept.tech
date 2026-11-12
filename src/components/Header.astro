@@ -1,0 +1,53 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+---
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a href={t.nav.other.href === '/' ? '/en/' : '/'} class="logo" data-cursor="Anadept">
+      anadept<span class="logo-dot"></span>
+    </a>
+    <nav class="nav">
+      {t.nav.links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <div class="hdr-r">
+      <a href={t.nav.other.href} class="lang" data-cursor={t.nav.other.label === 'EN' ? 'English' : 'Русский'}>{t.nav.other.label}</a>
+      <a href="#contact" class="btn hdr-cta" data-magnetic>{t.nav.cta}<span class="arr">→</span></a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const h = document.querySelector('.hdr')!;
+  const on = () => h.classList.toggle('scrolled', scrollY > 10);
+  addEventListener('scroll', on, { passive: true }); on();
+</script>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 40;
+    transition: background .3s, border-color .3s;
+    border-bottom: 1px solid transparent;
+  }
+  .hdr.scrolled {
+    background: color-mix(in oklab, var(--milk) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-color: var(--line);
+  }
+  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 24px; }
+  .logo { font-weight: 600; font-size: 22px; letter-spacing: -0.04em; display: inline-flex; align-items: flex-end; gap: 2px; }
+  .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-bottom: 6px; }
+  .nav { display: flex; gap: 32px; font-size: 15px; color: var(--ink-2); }
+  .nav a { position: relative; }
+  .nav a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: currentColor;
+    transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease);
+  }
+  .nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+  .hdr-r { display: flex; align-items: center; gap: 18px; }
+  .lang { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .lang:hover { color: var(--ink); }
+  .hdr-cta { padding: 11px 20px; font-size: 15px; }
+  @media (max-width: 920px) { .nav { display: none; } }
+  @media (max-width: 420px) { .hdr-cta { padding: 10px 14px; font-size: 14px; } .hdr-cta .arr { display: none; } }
+</style>

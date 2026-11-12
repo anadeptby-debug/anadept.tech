@@ -1,0 +1,119 @@
+---
+import '../styles/global.css';
+import type { Lang, Dict } from '../i18n/content';
+
+interface Props { lang: Lang; t: Dict }
+const { lang, t } = Astro.props;
+const alt = lang === 'ru' ? '/en/' : '/';
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{t.meta.title}</title>
+  <meta name="description" content={t.meta.description} />
+  <link rel="alternate" hreflang={lang === 'ru' ? 'en' : 'ru'} href={alt} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script is:inline>
+    try {
+      const a = localStorage.getItem('anadept-accent');
+      if (a) document.documentElement.style.setProperty('--accent', a);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <slot />
+
+  <!-- Custom cursor -->
+  <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-label"></span></div>
+
+  <!-- Temporary accent picker (remove once accent is chosen) -->
+  <div class="accent-picker" aria-label={t.accent}>
+    <span>{t.accent}</span>
+    {[
+      ['#d2643c', 'Терракота'],
+      ['#2f5bea', 'Кобальт'],
+      ['#5c7a3b', 'Олива'],
+      ['#e0a12e', 'Янтарь'],
+      ['#7a5cf0', 'Фиалка'],
+      ['#1f8a7a', 'Бирюза'],
+    ].map(([c, n]) => (
+      <button type="button" style={`--c:${c}`} data-accent={c} data-cursor={n} aria-label={n}></button>
+    ))}
+  </div>
+
+  <script>
+    // ---------- Custom cursor ----------
+    const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const cur = document.querySelector<HTMLElement>('.cursor')!;
+    const label = cur.querySelector<HTMLElement>('.cursor-label')!;
+    if (fine) {
+      document.documentElement.classList.add('has-cursor');
+      let x = -100, y = -100, cx = x, cy = y;
+      addEventListener('mousemove', (e) => { x = e.clientX; y = e.clientY; cur.classList.remove('hidden'); }, { passive: true });
+      document.addEventListener('mouseleave', () => cur.classList.add('hidden'));
+      addEventListener('mousedown', () => cur.classList.add('is-down'));
+      addEventListener('mouseup', () => cur.classList.remove('is-down'));
+      const loop = () => {
+        cx += (x - cx) * 0.22; cy += (y - cy) * 0.22;
+        cur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        requestAnimationFrame(loop);
+      };
+      loop();
+      document.addEventListener('mouseover', (e) => {
+        const el = (e.target as HTMLElement).closest<HTMLElement>('[data-cursor], a, button, input, textarea, label, .chip');
+        cur.classList.remove('is-label', 'is-hover', 'is-text');
+        if (!el) return;
+        const text = el.dataset.cursor;
+        if (text) { label.textContent = text; cur.classList.add('is-label'); }
+        else if (el.matches('input, textarea')) cur.classList.add('is-text');
+        else cur.classList.add('is-hover');
+      });
+
+      // Magnetic buttons
+      document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((b) => {
+        b.addEventListener('mousemove', (e) => {
+          const r = b.getBoundingClientRect();
+          b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px, ${(e.clientY - r.top - r.height / 2) * 0.28}px)`;
+        });
+        b.addEventListener('mouseleave', () => (b.style.transform = ''));
+      });
+    }
+
+    // ---------- Reveal on scroll ----------
+    const io = new IntersectionObserver((es) => es.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    // ---------- Accent picker ----------
+    document.querySelectorAll<HTMLButtonElement>('[data-accent]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const c = b.dataset.accent!;
+        document.documentElement.style.setProperty('--accent', c);
+        try { localStorage.setItem('anadept-accent', c); } catch {}
+      });
+    });
+  </script>
+
+  <style>
+    .accent-picker {
+      position: fixed; left: 16px; bottom: 16px; z-index: 50;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px 8px 14px; border-radius: 999px;
+      background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow);
+      font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase;
+    }
+    .accent-picker button {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--paper);
+      background: var(--c); box-shadow: 0 0 0 1px var(--line-2); padding: 0; cursor: pointer;
+      transition: transform .2s;
+    }
+    .accent-picker button:hover { transform: scale(1.2); }
+  </style>
+</body>
+</html>
