@@ -26,7 +26,7 @@ const f = t.faq;
   details { border-bottom: 1px solid var(--line-2); }
   summary {
     list-style: none; display: flex; justify-content: space-between; gap: 24px; align-items: center;
-    padding: 26px 0; font-size: clamp(18px, 1.6vw, 21px); font-weight: 500; cursor: pointer;
+    padding: 30px 0; font-size: clamp(18px, 1.6vw, 21px); font-weight: 500; cursor: pointer;
   }
   summary::-webkit-details-marker { display: none; }
   summary i { flex: none; position: relative; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line-2); transition: background .3s, transform .4s var(--ease); }
@@ -34,7 +34,7 @@ const f = t.faq;
   summary i::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform .3s; }
   details[open] summary i { background: var(--ink); color: var(--milk); border-color: var(--ink); }
   details[open] summary i::after { transform: translate(-50%, -50%) rotate(0); }
-  .a { padding: 0 56px 28px 0; color: var(--muted); }
+  .a { padding: 0 56px 32px 0; color: var(--muted); line-height: 1.65; max-width: 640px; }
   details[open] .a { animation: open .4s var(--ease); }
   @keyframes open { from { opacity: 0; transform: translateY(-6px); } }
   @media (max-width: 920px) { .faq-grid { grid-template-columns: 1fr; } .a { padding-right: 0; } }

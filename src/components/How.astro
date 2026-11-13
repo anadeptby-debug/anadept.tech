@@ -1,0 +1,87 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const h = t.how;
+---
+<section class="how" id="how" data-cur="byn">
+  <div class="wrap">
+    <div class="head reveal">
+      <div class="sec-head">
+        <span class="eyebrow">{h.eyebrow}</span>
+        <h2>{h.title}</h2>
+      </div>
+      <div class="toggle" role="group">
+        <button type="button" data-c="byn" aria-pressed="true">{h.toggle.byn}</button>
+        <button type="button" data-c="rub" aria-pressed="false">{h.toggle.rub}</button>
+        <span class="knob"></span>
+      </div>
+    </div>
+
+    <ol class="steps">
+      {h.steps.map((s, i) => (
+        <li class={`step reveal${s.hot ? ' hot' : ''}`} style={`transition-delay:${i * 70}ms`} data-cursor={s.hot ? h.hot : undefined}>
+          <div class="s-top">
+            <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+            <span class="time mono">{s.time}</span>
+          </div>
+          <h3>{s.t}</h3>
+          <p>{s.d}</p>
+          <div class="price">
+            <span class="byn">{s.byn}</span>
+            <span class="rub">{s.rub}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <ul class="extra reveal">
+      {h.extra.map((e) => (
+        <li><span>{e.t}</span><span class="mono pr"><span class="byn">{e.byn}</span><span class="rub">{e.rub}</span></span></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script>
+  const sec = document.querySelector<HTMLElement>('.how')!;
+  const btns = [...sec.querySelectorAll<HTMLButtonElement>('.toggle button')];
+  btns.forEach((b) => b.addEventListener('click', () => {
+    sec.dataset.cur = b.dataset.c!;
+    btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+</script>
+
+<style>
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(36px, 5vw, 56px); }
+  .head .sec-head { margin: 0; }
+  .toggle { position: relative; display: inline-flex; padding: 4px; border-radius: 10px; background: var(--milk-2); }
+  .toggle button { position: relative; z-index: 1; border: 0; background: none; padding: 8px 20px; font-family: var(--mono); font-size: 14px; cursor: pointer; transition: color .3s; }
+  .knob { position: absolute; top: 4px; left: 4px; bottom: 4px; width: calc(50% - 4px); border-radius: 7px; background: var(--ink); transition: transform .4s var(--ease); }
+  .toggle button[aria-pressed="true"] { color: var(--milk); }
+  [data-cur="rub"] .knob { transform: translateX(100%); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .step {
+    position: relative; display: grid; gap: 16px; align-content: start; padding: 30px 28px; border-radius: 14px;
+    background: var(--paper); border: 1px solid var(--line); transition: transform .4s var(--ease), box-shadow .4s, border-color .3s;
+  }
+  .step:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .step.hot { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .s-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .n { color: var(--accent); }
+  .step h3 { font-size: 22px; }
+  .step p { color: var(--muted); font-size: 16px; line-height: 1.6; }
+  .price { display: grid; margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line-2); font-weight: 600; font-size: 17px; }
+  .price span, .pr span { grid-area: 1 / 1; transition: opacity .3s, transform .4s var(--ease); }
+  .rub { opacity: 0; transform: translateY(6px); }
+  [data-cur="rub"] .rub { opacity: 1; transform: none; }
+  [data-cur="rub"] .byn { opacity: 0; transform: translateY(-6px); }
+  .step { grid-template-rows: auto auto 1fr auto; }
+
+  .extra { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .extra li { display: flex; justify-content: space-between; gap: 12px; padding: 18px 4px; border-top: 1px solid var(--line-2); font-size: 15px; color: var(--muted); }
+  .pr { display: grid; text-align: right; color: var(--ink); font-size: 13px; }
+
+  @media (max-width: 1000px) { .steps { grid-template-columns: 1fr 1fr; } .extra { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+</style>

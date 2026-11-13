@@ -14,9 +14,8 @@ const c = t.contact;
       </div>
       <form class="form reveal" data-ok={c.ok}>
         <label><span>{c.name}</span><input name="name" required autocomplete="name" /></label>
-        <label><span>{c.company}</span><input name="company" autocomplete="organization" /></label>
-        <label class="full"><span>{c.contact}</span><input name="contact" required /></label>
-        <label class="full"><span>{c.process}</span><textarea name="process" rows="3"></textarea></label>
+        <label><span>{c.contact}</span><input name="contact" required /></label>
+        <label class="full"><span>{c.process}</span><textarea name="process" rows="2"></textarea></label>
         <button class="btn accent full" type="submit" data-magnetic>{c.send}<span class="arr">→</span></button>
         <p class="consent full">{c.consent}</p>
       </form>
@@ -51,7 +50,7 @@ const c = t.contact;
   .c-txt h2 { font-size: clamp(30px, 3.4vw, 46px); }
   .alt { color: #a5a29b; font-size: 15px; }
   .alt a { color: var(--milk); border-bottom: 1px solid #555; }
-  .form { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
+  .form { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: start; }
   .form label { display: grid; gap: 6px; font-size: 13px; color: #9a9790; }
   .full { grid-column: 1 / -1; }
   .form input, .form textarea {

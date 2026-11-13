@@ -1,0 +1,41 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const s = t.services;
+---
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">{s.eyebrow}</span>
+      <h2>{s.title}</h2>
+    </div>
+    <div class="grid">
+      {s.items.map((it, i) => (
+        <a href="#contact" class="svc reveal" style={`transition-delay:${(i % 4) * 60}ms`} data-cursor={s.cursor}>
+          <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{it.t}</h3>
+          <p>{it.d}</p>
+          <span class="time mono">{it.time}<span class="arr">→</span></span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .svc {
+    display: grid; grid-template-rows: auto auto 1fr auto; gap: 16px; padding: 32px 28px; min-height: 300px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    transition: transform .4s var(--ease), box-shadow .4s, border-color .3s;
+  }
+  .svc:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-2); }
+  .n { font-size: 12px; color: var(--accent); }
+  .svc h3 { font-size: 20px; line-height: 1.2; }
+  .svc p { color: var(--muted); font-size: 16px; line-height: 1.6; }
+  .time { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding-top: 14px; border-top: 1px dashed var(--line-2); }
+  .arr { color: var(--accent); opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s var(--ease); }
+  .svc:hover .arr { opacity: 1; transform: none; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .svc { min-height: 0; } }
+</style>

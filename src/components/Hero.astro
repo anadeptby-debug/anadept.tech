@@ -7,114 +7,107 @@ const h = t.hero;
   <div class="glow" aria-hidden="true"></div>
   <div class="wrap hero-grid">
     <div class="hero-txt">
-      <span class="pill reveal"><span class="dot"></span>{h.pill}</span>
       <h1>
         {h.title.map((line, i) => (
-          <span class="line"><span class="line-in" style={`--d:${i * 0.12}s`}>{line}</span></span>
+          <span class="line"><span class="line-in" style={`--d:${i * 0.12}s`} set:html={line} /></span>
         ))}
       </h1>
       <p class="lead reveal">{h.lead}</p>
       <div class="hero-cta reveal">
         <a href="#contact" class="btn" data-magnetic data-cursor={h.cursorCta}>{h.cta}<span class="arr">→</span></a>
-        <a href="#audit" class="btn ghost">{h.cta2}</a>
+        <a href="#demo" class="link">{h.cta2} <span>↓</span></a>
       </div>
+      <ul class="facts reveal">
+        {h.trust.map((x) => <li><span class="ck">✓</span>{x}</li>)}
+      </ul>
     </div>
 
-    <div class="agent card reveal" data-cursor={h.flowTitle}>
-      <div class="agent-top">
-        <span class="eyebrow">{h.flowTitle}</span>
-        <span class="dot live"></span>
-      </div>
-      <ol class="agent-steps">
-        {h.flow.map((s, i) => (
-          <li data-i={i}>
-            <span class="tick"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <div><b>{s.t}</b><small>{s.s}</small></div>
+    <div class="log reveal">
+      <div class="log-top mono"><span>{h.logTitle}</span><span class="dot live"></span></div>
+      <ol class="log-rows mono">
+        {h.log.map((r) => (
+          <li class={r.k}>
+            <span class="ts">{r.t}</span>
+            <span class="mark">{r.k === 'warn' ? '!' : r.k === 'in' ? '↓' : '✓'}</span>
+            <span class="a">{r.a}</span>
+            <span class="s">{r.s}</span>
           </li>
         ))}
       </ol>
-      <div class="agent-stats">
-        {h.flowStats.map((s) => <div><b>{s.v}</b><small>{s.l}</small></div>)}
+      <div class="measure mono">
+        <span class="m-l">{h.measure.label}</span>
+        <span class="m-b">{h.measure.before}</span>
+        <span class="m-arr">→</span>
+        <span class="m-a">{h.measure.after}</span>
       </div>
     </div>
   </div>
-
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-in">
-      {[...t.marquee, ...t.marquee].map((m) => <span>{m}</span>)}
-    </div>
-  </div>
+  <div class="wrap"><p class="tools mono reveal">{h.tools}</p></div>
 </section>
 
 <script>
-  // Glow follows the mouse
   const hero = document.querySelector<HTMLElement>('.hero')!;
   hero.addEventListener('mousemove', (e) => {
     const r = hero.getBoundingClientRect();
     hero.style.setProperty('--mx', `${e.clientX - r.left}px`);
     hero.style.setProperty('--my', `${e.clientY - r.top}px`);
   });
-
-  // Agent steps loop
-  const items = [...document.querySelectorAll<HTMLElement>('.agent-steps li')];
+  const rows = [...document.querySelectorAll<HTMLElement>('.log-rows li')];
+  const m = document.querySelector<HTMLElement>('.measure')!;
   let k = 0;
   const tick = () => {
-    items.forEach((li, i) => {
-      li.classList.toggle('done', i < k);
-      li.classList.toggle('active', i === k);
-    });
-    k = (k + 1) % (items.length + 2);
+    rows.forEach((li, i) => li.classList.toggle('on', i < k));
+    m.classList.toggle('on', k >= rows.length);
+    k = k > rows.length + 2 ? 0 : k + 1;
   };
-  tick(); setInterval(tick, 1300);
+  tick(); setInterval(tick, 900);
 </script>
 
 <style>
-  .hero { padding-top: clamp(40px, 7vw, 96px); padding-bottom: 0; overflow: hidden; --mx: 30%; --my: 40%; }
+  .hero { padding-top: clamp(56px, 8vw, 120px); padding-bottom: 0; overflow: hidden; --mx: 70%; --my: 40%; }
   .glow {
     position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(600px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 14%, transparent), transparent 60%);
-    transition: background .2s;
+    background: radial-gradient(520px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 10%, transparent), transparent 60%);
+    /* плавно гасим подсветку к краям блока — без резкой границы */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 92%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 92%);
   }
-  .hero-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; position: relative; }
-  .hero-txt { display: grid; gap: 28px; justify-items: start; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: clamp(40px, 6vw, 96px); align-items: center; position: relative; }
+  .hero-txt { display: grid; gap: 32px; justify-items: start; }
   h1 { display: grid; }
-  .line { display: block; overflow: hidden; padding-bottom: .06em; }
+  .line { display: block; overflow: hidden; padding-bottom: .08em; }
   .line-in { display: block; transform: translateY(105%); animation: up 1s var(--ease) forwards; animation-delay: var(--d); }
-  .line:last-child .line-in { color: var(--muted); }
+  .line-in :global(em) { color: var(--accent); font-size: 1.04em; }
   @keyframes up { to { transform: none; } }
-  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+  .link { font-weight: 500; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; transition: border-color .2s; }
+  .link:hover { border-color: var(--ink); }
+  .link span { color: var(--accent); }
+  .facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; color: var(--ink-2); }
+  .facts li { display: flex; gap: 8px; align-items: center; }
+  .ck { color: var(--accent); font-weight: 600; }
 
-  .agent { padding: 24px; display: grid; gap: 18px; border-radius: var(--radius-l); }
-  .agent-top { display: flex; justify-content: space-between; align-items: center; }
-  .agent-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .agent-steps li {
-    display: flex; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 14px;
-    border: 1px solid var(--line); background: var(--milk); opacity: .45;
-    transition: opacity .5s, background .5s, border-color .5s, transform .5s var(--ease);
-  }
-  .agent-steps li b { display: block; font-weight: 500; font-size: 15px; }
-  .agent-steps li small { color: var(--muted); font-size: 13px; }
-  .agent-steps li.done { opacity: 1; }
-  .agent-steps li.active { opacity: 1; background: var(--paper); border-color: var(--ink); transform: translateX(6px); }
-  .tick {
-    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-    border: 1px solid var(--line-2); color: transparent; transition: all .4s;
-  }
-  .tick svg { width: 14px; }
-  .done .tick { background: var(--ink); border-color: var(--ink); color: var(--milk); }
-  .active .tick { border-color: var(--accent); background: var(--accent-soft); animation: spin 1.3s linear infinite; border-top-color: transparent; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .agent-stats { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--ink); color: var(--milk); border-radius: 14px; overflow: hidden; }
-  .agent-stats div { padding: 16px 10px; text-align: center; border-left: 1px solid #333; }
-  .agent-stats div:first-child { border-left: 0; }
-  .agent-stats b { display: block; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
-  .agent-stats small { color: #9a9790; font-size: 12px; }
-
-  .marquee { margin-top: clamp(64px, 9vw, 120px); border-block: 1px solid var(--line); overflow: hidden; padding: 22px 0; }
-  .marquee-in { display: flex; gap: 56px; width: max-content; animation: mq 40s linear infinite; }
-  .marquee-in span { font-size: 18px; color: var(--muted); white-space: nowrap; }
-  .marquee:hover .marquee-in { animation-play-state: paused; }
-  @keyframes mq { to { transform: translateX(-50%); } }
+  .log { background: var(--ink); color: #d9d5cd; border-radius: 18px; padding: 22px 22px 24px; box-shadow: 0 30px 60px -30px rgba(30,20,10,.45); display: flex; flex-direction: column; min-height: 500px; }
+  .log-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #8b877f; padding-bottom: 14px; border-bottom: 1px dashed #3a3a3c; margin-bottom: 8px; }
+  .log-rows { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 0; font-size: 13px; flex: 1; }
+  .log-rows li { display: grid; grid-template-columns: 64px 14px 1fr; grid-template-rows: auto auto; column-gap: 8px; row-gap: 2px; align-items: baseline; padding: 11px 0; border-bottom: 1px solid #2a2a2c; opacity: .22; transition: opacity .4s; }
+  .log-rows li .s { grid-column: 3; text-align: left; font-size: 12px; }
+  .log-rows li.on { opacity: 1; }
+  .ts { color: #6f6b64; }
+  .mark { color: #7fc79f; }
+  .warn .mark, .warn .s { color: var(--accent); }
+  .in .mark { color: #8b877f; }
+  .a { color: var(--milk); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .s { color: #8b877f; text-align: right; }
+  .measure { margin-top: auto; padding-top: 14px; border-top: 1px dashed #3a3a3c; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; opacity: .25; transition: opacity .5s; }
+  .measure.on { opacity: 1; }
+  .m-l { flex-basis: 100%; font-size: 12px; color: #8b877f; text-transform: uppercase; }
+  .m-b, .m-a { white-space: nowrap; }
+  .m-b { font-size: 20px; color: #8b877f; text-decoration: line-through; text-decoration-color: var(--accent); }
+  .m-arr { color: #6f6b64; }
+  .m-a { font-size: 28px; color: var(--accent); font-weight: 500; }
+  .tools { margin-top: clamp(48px, 6vw, 72px); font-size: 13px; color: var(--muted); padding-top: 20px; border-top: 1px solid var(--line-2); }
 
   @media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 920px) { .log { min-height: 0; } }
 </style>

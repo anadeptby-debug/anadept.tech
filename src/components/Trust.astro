@@ -1,0 +1,54 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const tr = t.trust;
+---
+<section class="trust" id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">{tr.eyebrow}</span>
+      <h2>{tr.title}</h2>
+      <p class="lead about-lead">{tr.lead}</p>
+    </div>
+    <div class="cards">
+      {tr.items.map((it, i) => (
+        <article class="card-d reveal" style={`transition-delay:${i * 80}ms`}>
+          <span class="n mono">0{i + 1}</span>
+          <h3>{it.t}</h3>
+          <p>{it.d}</p>
+        </article>
+      ))}
+    </div>
+    <details class="more reveal">
+      <summary><span>{tr.more}</span><i></i></summary>
+      <div class="more-grid">
+        {tr.moreItems.map((m) => <div><b>{m.t}</b><p>{m.d}</p></div>)}
+      </div>
+    </details>
+  </div>
+</section>
+
+<style>
+  .trust { background: var(--ink); color: var(--milk); }
+  .trust :global(.sec-head > .eyebrow) { color: #9a9790; }
+  .trust :global(.sec-head > .eyebrow::after) { background: #3a3a3c; }
+  .about-lead { color: #b6b2aa; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card-d { padding: 36px 32px; border: 1px solid #333; border-radius: 14px; display: grid; gap: 18px; align-content: start; transition: border-color .3s, background .3s; }
+  .card-d:hover { border-color: var(--accent); background: #232325; }
+  .n { color: var(--accent); font-size: 13px; }
+  .card-d p { color: #a5a29b; font-size: 17px; line-height: 1.6; }
+  .more { margin-top: 48px; border-top: 1px solid #333; }
+  .more summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px 0; font-weight: 500; }
+  .more summary::-webkit-details-marker { display: none; }
+  .more i { position: relative; width: 28px; height: 28px; border-radius: 50%; border: 1px solid #444; }
+  .more i::before, .more i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 1.5px; background: currentColor; transform: translate(-50%, -50%); }
+  .more i::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform .3s; }
+  .more[open] i::after { transform: translate(-50%, -50%); }
+  .more-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; padding-bottom: 8px; animation: open .4s var(--ease); }
+  .more-grid b { font-weight: 500; }
+  .more-grid p { color: #a5a29b; font-size: 14px; margin-top: 4px; }
+  @keyframes open { from { opacity: 0; transform: translateY(-6px); } }
+  @media (max-width: 920px) { .cards { grid-template-columns: 1fr; } .more-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .more-grid { grid-template-columns: 1fr; } }
+</style>

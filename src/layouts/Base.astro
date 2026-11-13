@@ -1,10 +1,11 @@
 ---
 import '../styles/global.css';
 import type { Lang, Dict } from '../i18n/content';
+import { url } from '../lib/url';
 
 interface Props { lang: Lang; t: Dict }
 const { lang, t } = Astro.props;
-const alt = lang === 'ru' ? '/en/' : '/';
+const alt = url(lang === 'ru' ? '/en/' : '/');
 ---
 <!doctype html>
 <html lang={lang}>
@@ -14,16 +15,10 @@ const alt = lang === 'ru' ? '/en/' : '/';
   <title>{t.meta.title}</title>
   <meta name="description" content={t.meta.description} />
   <link rel="alternate" hreflang={lang === 'ru' ? 'en' : 'ru'} href={alt} />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script is:inline>
-    try {
-      const a = localStorage.getItem('anadept-accent');
-      if (a) document.documentElement.style.setProperty('--accent', a);
-    } catch (e) {}
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..700&family=Manrope:wght@700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
 </head>
 <body>
   <slot />
@@ -31,20 +26,7 @@ const alt = lang === 'ru' ? '/en/' : '/';
   <!-- Custom cursor -->
   <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-label"></span></div>
 
-  <!-- Temporary accent picker (remove once accent is chosen) -->
-  <div class="accent-picker" aria-label={t.accent}>
-    <span>{t.accent}</span>
-    {[
-      ['#d2643c', 'Терракота'],
-      ['#2f5bea', 'Кобальт'],
-      ['#5c7a3b', 'Олива'],
-      ['#e0a12e', 'Янтарь'],
-      ['#7a5cf0', 'Фиалка'],
-      ['#1f8a7a', 'Бирюза'],
-    ].map(([c, n]) => (
-      <button type="button" style={`--c:${c}`} data-accent={c} data-cursor={n} aria-label={n}></button>
-    ))}
-  </div>
+
 
   <script>
     // ---------- Custom cursor ----------
@@ -90,30 +72,7 @@ const alt = lang === 'ru' ? '/en/' : '/';
     }), { rootMargin: '0px 0px -8% 0px' });
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-    // ---------- Accent picker ----------
-    document.querySelectorAll<HTMLButtonElement>('[data-accent]').forEach((b) => {
-      b.addEventListener('click', () => {
-        const c = b.dataset.accent!;
-        document.documentElement.style.setProperty('--accent', c);
-        try { localStorage.setItem('anadept-accent', c); } catch {}
-      });
-    });
   </script>
 
-  <style>
-    .accent-picker {
-      position: fixed; left: 16px; bottom: 16px; z-index: 50;
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px 8px 14px; border-radius: 999px;
-      background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow);
-      font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase;
-    }
-    .accent-picker button {
-      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--paper);
-      background: var(--c); box-shadow: 0 0 0 1px var(--line-2); padding: 0; cursor: pointer;
-      transition: transform .2s;
-    }
-    .accent-picker button:hover { transform: scale(1.2); }
-  </style>
 </body>
 </html>
