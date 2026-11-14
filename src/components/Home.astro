@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Header from './Header.astro';
 import Hero from './Hero.astro';
 import Services from './Services.astro';
+import Flow from './Flow.astro';
 import Solutions from './Solutions.astro';
 import How from './How.astro';
 import Audit from './Audit.astro';
@@ -10,6 +11,7 @@ import Trust from './Trust.astro';
 import Faq from './Faq.astro';
 import Contact from './Contact.astro';
 import { dict, type Lang } from '../i18n/content';
+import { url } from '../lib/url';
 
 const { lang } = Astro.props as { lang: Lang };
 const t = dict[lang];
@@ -19,6 +21,7 @@ const t = dict[lang];
   <main>
     <Hero t={t} />
     <Services t={t} />
+    <Flow t={t} />
     <Solutions t={t} />
     <Audit t={t} />
     <How t={t} />
@@ -28,7 +31,7 @@ const t = dict[lang];
   </main>
   <footer class="ftr">
     <div class="wrap ftr-in">
-      <span class="logo">anadept<span class="logo-dot"></span></span>
+      <img class="logo" src={url('/brand/logo-center.png')} alt="Anadept" width="117" height="24" />
       <nav class="f-nav">{t.nav.links.map((l) => <a href={l.href}>{l.label}</a>)}</nav>
       <span>{t.footer.rights}</span>
     </div>
@@ -40,6 +43,5 @@ const t = dict[lang];
   .ftr-in { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
   .f-nav { display: flex; gap: 20px; flex-wrap: wrap; }
   .f-nav a:hover { color: var(--ink); }
-  .logo { font-weight: 600; font-size: 20px; letter-spacing: -0.04em; color: var(--ink); display: inline-flex; align-items: flex-end; gap: 2px; }
-  .logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-bottom: 5px; }
+  .logo { display: block; height: 24px; width: auto; }
 </style>

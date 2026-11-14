@@ -40,27 +40,27 @@ const c = t.contact;
 
 <style>
   .box {
-    position: relative; overflow: hidden; background: var(--ink); color: var(--milk);
-    border-radius: 36px; padding: clamp(28px, 6vw, 72px);
+    position: relative; overflow: hidden; background: var(--dark); color: var(--on-dark);
+    border-radius: 56px; padding: clamp(28px, 6vw, 72px);
     display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 64px); --mx: 20%; --my: 20%;
   }
-  .glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(520px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 35%, transparent), transparent 60%); }
+  .glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(520px circle at var(--mx) var(--my), color-mix(in oklab, var(--peach) 28%, transparent), transparent 60%); }
   .c-txt { position: relative; display: grid; gap: 24px; align-content: start; }
-  .c-txt .eyebrow { color: #9a9790; }
+  .c-txt .eyebrow { color: #c7cad3; }
   .c-txt h2 { font-size: clamp(30px, 3.4vw, 46px); }
-  .alt { color: #a5a29b; font-size: 15px; }
-  .alt a { color: var(--milk); border-bottom: 1px solid #555; }
+  .alt { color: var(--on-dark-muted); font-size: 15px; }
+  .alt a { color: var(--on-dark); border-bottom: 1px solid #555c6b; }
   .form { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: start; }
-  .form label { display: grid; gap: 6px; font-size: 13px; color: #9a9790; }
+  .form label { display: grid; gap: 6px; font-size: 13px; color: var(--on-dark-muted); }
   .full { grid-column: 1 / -1; }
   .form input, .form textarea {
-    width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid #3a3a3c; background: #262628;
-    color: var(--milk); font-size: 16px; outline: none; transition: border-color .2s; resize: vertical;
+    width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--on-dark-line); background: #1a2030;
+    color: var(--on-dark); font-size: 16px; outline: none; transition: border-color .2s; resize: vertical;
   }
-  .form input:focus, .form textarea:focus { border-color: var(--accent); }
+  .form input:focus, .form textarea:focus { border-color: var(--peach); }
   .form .btn { justify-content: center; padding: 18px; }
-  .consent { font-size: 12px; color: #7d7a74; }
+  .consent { font-size: 12px; color: #7c8291; }
   .form :global(.ok) { font-size: 22px; grid-column: 1 / -1; }
-  @media (max-width: 860px) { .box { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) { .box { grid-template-columns: 1fr; border-radius: 36px; } }
   @media (max-width: 480px) { .form { grid-template-columns: 1fr; } }
 </style>

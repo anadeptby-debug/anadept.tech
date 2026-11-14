@@ -6,13 +6,13 @@ const home = url(t.nav.other.href === '/' ? '/en/' : '/');
 ---
 <header class="hdr">
   <div class="wrap hdr-in">
-    <a href={home} class="logo">anadept<span class="logo-dot"></span></a>
+    <a href={home} class="logo" aria-label="Anadept"><img src={url('/brand/logo-white-center.png')} alt="Anadept" width="122" height="25" /></a>
     <nav class="nav">
       {t.nav.links.map((l) => <a href={l.href} data-nav={l.href.slice(1)}>{l.label}</a>)}
     </nav>
     <div class="hdr-r">
       <a href={url(t.nav.other.href)} class="lang">{t.nav.other.label}</a>
-      <a href="#contact" class="btn hdr-cta" data-magnetic>{t.nav.cta}<span class="arr">→</span></a>
+      <a href="#contact" class="hdr-cta">{t.nav.cta}</a>
       <button type="button" class="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
     </div>
   </div>
@@ -23,7 +23,7 @@ const home = url(t.nav.other.href === '/' ? '/en/' : '/');
   </nav>
 </header>
 
-<a href="#contact" class="m-cta btn">{t.hero.cta}<span class="arr">→</span></a>
+<a href="#contact" class="m-cta btn">{t.nav.cta}<span class="arr">→</span></a>
 
 <script>
   const h = document.querySelector<HTMLElement>('.hdr')!;
@@ -36,7 +36,6 @@ const home = url(t.nav.other.href === '/' ? '/en/' : '/');
   };
   addEventListener('scroll', on, { passive: true }); on();
 
-  // Mobile menu
   const burger = h.querySelector<HTMLButtonElement>('.burger')!;
   const setOpen = (v: boolean) => {
     h.classList.toggle('open', v);
@@ -47,7 +46,6 @@ const home = url(t.nav.other.href === '/' ? '/en/' : '/');
   burger.addEventListener('click', () => setOpen(!h.classList.contains('open')));
   h.querySelectorAll('.m-nav a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
 
-  // Highlight the current section
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) links.forEach((l) => l.classList.toggle('cur', l.dataset.nav === e.target.id));
@@ -56,44 +54,41 @@ const home = url(t.nav.other.href === '/' ? '/en/' : '/');
 </script>
 
 <style>
-  .hdr { position: sticky; top: 0; z-index: 40; transition: background .3s, border-color .3s; border-bottom: 1px solid transparent; }
-  .hdr.scrolled, .hdr.open { background: color-mix(in oklab, var(--milk) 88%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); border-color: var(--line); }
-  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 20px; }
-  .logo { font-weight: 600; font-size: 22px; letter-spacing: -0.04em; display: inline-flex; align-items: flex-end; gap: 2px; }
-  .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-bottom: 6px; }
-  .nav { display: flex; gap: 2px; font-size: 15px; }
-  .nav a { padding: 8px 12px; border-radius: 8px; color: var(--ink-2); transition: background .2s, color .2s; }
-  .nav a:hover { background: var(--milk-2); }
-  .nav a.cur { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
-  .hdr-r { display: flex; align-items: center; gap: 14px; }
-  .lang { font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  .lang:hover { color: var(--ink); }
-  .hdr-cta { padding: 11px 18px; font-size: 15px; }
+  /* Тёмная шапка как в макете: поверх hero прозрачная, при прокрутке — плотная */
+  .hdr { position: fixed; top: 0; left: 0; right: 0; z-index: 40; color: var(--on-dark); transition: background .3s, box-shadow .3s; }
+  .hdr.scrolled, .hdr.open { background: color-mix(in oklab, var(--dark) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--on-dark-line); }
+  .hdr-in { display: flex; align-items: center; gap: 28px; height: 96px; transition: height .3s; }
+  .scrolled .hdr-in { height: 72px; }
+  .logo { margin-right: auto; display: inline-flex; flex: none; }
+  .logo img { display: block; height: 25px; width: auto; }
+  .nav { display: flex; align-items: center; gap: 30px; font-size: 14px; }
+  .nav a { padding-block: 10px; transition: color .16s; }
+  .nav a:hover, .nav a.cur { color: var(--peach); }
+  .hdr-r { display: flex; align-items: center; gap: 18px; }
+  .lang { font-size: 13px; color: var(--on-dark-muted); }
+  .lang:hover { color: var(--on-dark); }
+  .hdr-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 24px; border-radius: 999px; border: 1px solid #c7cad3; font-size: 14px; font-weight: 500; white-space: nowrap; transition: background .16s; }
+  .hdr-cta:hover { background: #ffffff15; }
 
-  .burger { display: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--paper); cursor: pointer; position: relative; }
-  .burger i { position: absolute; left: 11px; right: 11px; height: 1.5px; background: var(--ink); transition: transform .3s var(--ease), top .3s var(--ease); }
+  .burger { display: none; width: 42px; height: 42px; border-radius: 999px; border: 1px solid #c7cad3; background: transparent; cursor: pointer; position: relative; }
+  .burger i { position: absolute; left: 12px; right: 12px; height: 1.5px; background: var(--on-dark); transition: transform .3s var(--ease), top .3s var(--ease); }
   .burger i:first-child { top: 16px; } .burger i:last-child { top: 24px; }
   .open .burger i:first-child { top: 20px; transform: rotate(45deg); }
   .open .burger i:last-child { top: 20px; transform: rotate(-45deg); }
 
   .m-nav { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
   .m-nav > div { overflow: hidden; display: grid; width: 100%; min-height: 0; }
-  .m-nav a { padding: 14px 0; border-top: 1px solid var(--line); font-size: 20px; font-family: var(--font-head); font-weight: var(--head-w); letter-spacing: -0.01em; word-spacing: .1em; }
+  .m-nav a { padding: 14px 0; border-top: 1px solid var(--on-dark-line); font-size: 20px; font-family: var(--font-head); font-weight: 500; }
   .m-nav a:last-child { margin-bottom: 16px; }
   .open .m-nav { grid-template-rows: 1fr; }
 
   .m-cta { display: none; }
   @media (min-width: 1081px) { .m-nav { display: none; } }
-  @media (max-width: 1080px) {
-    .nav { display: none; }
-    .burger { display: block; }
-  }
+  @media (max-width: 1080px) { .nav { display: none; } .burger { display: block; } }
   @media (max-width: 920px) {
-    .m-cta {
-      display: flex; justify-content: center; position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 45;
-      box-shadow: 0 12px 30px -10px rgba(0,0,0,.4); transform: translateY(140%); transition: transform .4s var(--ease);
-    }
+    .m-cta { display: flex; position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 45; box-shadow: 0 12px 30px -10px rgba(0,0,0,.4); transform: translateY(140%); transition: transform .4s var(--ease); }
     .m-cta.show { transform: none; }
   }
-  @media (max-width: 480px) { .hdr-cta { display: none; } }
+  @media (max-width: 700px) { .hdr-in { height: 76px; gap: 12px; } .hdr-cta { padding: 0 16px; font-size: 12px; } }
+  @media (max-width: 420px) { .hdr-cta { display: none; } }
 </style>

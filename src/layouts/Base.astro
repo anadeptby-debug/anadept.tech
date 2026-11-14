@@ -12,19 +12,24 @@ const alt = url(lang === 'ru' ? '/en/' : '/');
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#121722" />
   <title>{t.meta.title}</title>
   <meta name="description" content={t.meta.description} />
   <link rel="alternate" hreflang={lang === 'ru' ? 'en' : 'ru'} href={alt} />
-  <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+  <link rel="icon" href={url('/favicon.ico')} sizes="any" />
+  <link rel="icon" href={url('/favicon-32.png')} type="image/png" sizes="32x32" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href={url('/favicon-dark-32.png')} type="image/png" sizes="32x32" media="(prefers-color-scheme: dark)" />
+  <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..700&family=Manrope:wght@700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..700&family=Wix+Madefor+Display:wght@400..800&display=swap" rel="stylesheet" />
 </head>
 <body>
   <slot />
 
   <!-- Custom cursor -->
   <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-label"></span></div>
+
 
 
 
@@ -41,7 +46,7 @@ const alt = url(lang === 'ru' ? '/en/' : '/');
       addEventListener('mousedown', () => cur.classList.add('is-down'));
       addEventListener('mouseup', () => cur.classList.remove('is-down'));
       const loop = () => {
-        cx += (x - cx) * 0.22; cy += (y - cy) * 0.22;
+        cx += (x - cx) * 0.5; cy += (y - cy) * 0.5;
         cur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
         requestAnimationFrame(loop);
       };
