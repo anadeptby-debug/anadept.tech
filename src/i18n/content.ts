@@ -4,9 +4,9 @@ type Step = { s: string; m: number; a?: boolean };
 
 const ru = {
   meta: {
-    title: 'Anadept — внедрение ИИ и автоматизация бизнеса. Цифра до и после',
+    title: 'Anadept — автоматизация и ИИ для бизнеса',
     description:
-      'Чат-боты, ИИ-агенты, голосовые роботы, работа с документами и интеграции с CRM и 1С. Сначала замеряем процесс, потом автоматизируем и показываем результат в цифрах.',
+      'Внедряем ИИ-агентов, интегрируем CRM и ERP, разрабатываем внутренние системы и автоматизируем рутинные задачи.',
   },
   nav: {
     links: [
@@ -230,9 +230,9 @@ type Dict = typeof ru;
 
 const en: Dict = {
   meta: {
-    title: 'Anadept — AI implementation and business automation. Measured before and after',
+    title: 'Anadept — automation and AI for business',
     description:
-      'Chatbots, AI agents, voice robots, document processing and CRM/ERP integrations. We measure the process first, then automate it and prove the result in numbers.',
+      'We deploy AI agents, integrate CRM and ERP, build internal systems and automate routine work.',
   },
   nav: {
     links: [
