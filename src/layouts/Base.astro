@@ -1,11 +1,11 @@
 ---
 import '../styles/global.css';
 import type { Lang, Dict } from '../i18n/content';
-import { url } from '../lib/url';
+import { url, lurl } from '../lib/url';
 
-interface Props { lang: Lang; t: Dict }
-const { lang, t } = Astro.props;
-const alt = url(lang === 'ru' ? '/en/' : '/');
+interface Props { lang: Lang; t: Dict; title?: string; path?: string }
+const { lang, t, title = t.meta.title, path = '/' } = Astro.props;
+const alt = lurl(lang === 'ru' ? 'en' : 'ru', path);
 ---
 <!doctype html>
 <html lang={lang}>
@@ -13,7 +13,7 @@ const alt = url(lang === 'ru' ? '/en/' : '/');
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#121722" />
-  <title>{t.meta.title}</title>
+  <title>{title}</title>
   <meta name="description" content={t.meta.description} />
   <link rel="alternate" hreflang={lang === 'ru' ? 'en' : 'ru'} href={alt} />
   <link rel="icon" href={url('/favicon.ico')} sizes="any" />

@@ -1,0 +1,45 @@
+---
+import Page from '../layouts/Page.astro';
+import Hero from '../components/Hero.astro';
+import PageTop from '../components/PageTop.astro';
+import Services from '../components/Services.astro';
+import WorkSteps from '../components/WorkSteps.astro';
+import Audit from '../components/Audit.astro';
+import Solutions from '../components/Solutions.astro';
+import How from '../components/How.astro';
+import Trust from '../components/Trust.astro';
+import Faq from '../components/Faq.astro';
+import Contact from '../components/Contact.astro';
+import { dict, type Lang } from '../i18n/content';
+
+// Все страницы сайта на двух языках: RU без префикса, EN под /en/
+export function getStaticPaths() {
+  const pages = ['', 'services', 'cases', 'pricing', 'about', 'contact'];
+  return (['ru', 'en'] as const).flatMap((lang) =>
+    pages.map((page) => ({
+      params: { slug: [lang === 'en' ? 'en' : '', page].filter(Boolean).join('/') || undefined },
+      props: { lang, page },
+    })),
+  );
+}
+
+const { lang, page } = Astro.props as { lang: Lang; page: string };
+const t = dict[lang];
+---
+<Page lang={lang} page={page}>
+  {page === '' && <Hero t={t} lang={lang} />}
+
+  {page === 'services' && <PageTop slot="top" eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />}
+  {page === 'services' && (
+    <>
+      <Services t={t} lang={lang} />
+      <WorkSteps t={t} />
+      <Audit t={t} lang={lang} />
+    </>
+  )}
+
+  {page === 'cases' && <Solutions t={t} />}
+  {page === 'pricing' && <How t={t} />}
+  {page === 'about' && (<><Trust t={t} /><Faq t={t} /></>)}
+  {page === 'contact' && <Contact t={t} />}
+</Page>

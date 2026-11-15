@@ -1,0 +1,65 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const w = t.services.work;
+---
+<section class="work" id="how-we-work">
+  <div class="wrap grid">
+    <div class="sec-head reveal">
+      <h2>{w.title}</h2>
+      <p class="lead">{w.lead}</p>
+    </div>
+
+    <ol class="path reveal">
+      {w.steps.map((s, i) => (
+        <li class={i === w.steps.length - 1 ? 'last' : ''} style={`--d:${i * 180}ms`}>
+          <span class="node mono">{String(i + 1).padStart(2, '0')}</span>
+          <span class="t">{s}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .grid .sec-head { margin: 0; }
+
+  /* Путь из 4 этапов на тёмной карточке; линия «прорисовывается» при появлении */
+  .path {
+    list-style: none; margin: 0; padding: clamp(28px, 3.5vw, 44px);
+    display: grid; gap: 22px; border-radius: 32px; background: var(--dark); color: var(--on-dark);
+    position: relative; overflow: hidden;
+  }
+  .path::before {
+    content: ''; position: absolute; right: -120px; top: -120px; width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in oklab, var(--orange) 28%, transparent), transparent 70%); pointer-events: none;
+  }
+  .path li { position: relative; display: grid; grid-template-columns: 60px 1fr; align-items: center; gap: 22px; min-height: 60px; }
+  .path li:not(:last-child)::after {
+    content: ''; position: absolute; left: 29px; top: 60px; width: 2px; height: 22px;
+    background: var(--peach); transform: scaleY(0); transform-origin: top; transition: transform .5s var(--ease) calc(var(--d) + 300ms);
+  }
+  .node {
+    display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%;
+    border: 1px solid var(--on-dark-line); background: #1a2030; font-size: 15px; color: var(--on-dark-muted);
+    transition: background .4s, color .4s, border-color .4s; transition-delay: var(--d);
+  }
+  .t { font-family: var(--font-head); font-size: clamp(20px, 2vw, 26px); font-weight: 500; letter-spacing: -.03em; line-height: 1.15; }
+  .path li { opacity: 0; transform: translateX(16px); transition: opacity .6s var(--ease) var(--d), transform .6s var(--ease) var(--d); }
+
+  .path.in li { opacity: 1; transform: none; }
+  .path.in li::after { transform: scaleY(1); }
+  .path.in .node { border-color: var(--peach); color: var(--on-dark); }
+  .path.in .last .node { background: var(--peach); color: var(--dark); }
+  .last .t { color: var(--peach); }
+  .path li:hover .node { background: var(--peach); color: var(--dark); transition-delay: 0s; }
+
+  @media (prefers-reduced-motion: reduce) { .path li, .path li::after, .node { transition: none; } }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) {
+    .path li { grid-template-columns: 48px 1fr; gap: 16px; min-height: 48px; }
+    .node { width: 48px; height: 48px; font-size: 13px; }
+    .path li:not(:last-child)::after { left: 23px; top: 48px; }
+  }
+</style>

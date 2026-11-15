@@ -5,9 +5,3 @@ dist/
 .claude/
 .wrangler/
 .dev.vars
-.agents/
-.codex/
-.impeccable/
-.taste-skill/
-artifacts/
-skills-lock.json
