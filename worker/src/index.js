@@ -1,4 +1,4 @@
-// Cloudflare Worker: посредник между конструктором на сайте и Gemini.
+// Cloudflare Worker: отдаёт статический сайт (dist) и отвечает конструктору на /api/audit через Gemini.
 // Ключ Gemini хранится только здесь (секрет GEMINI_API_KEY), в браузер он не попадает.
 import { SYSTEM_PROMPT, RESPONSE_SCHEMA, userMessage } from './prompt.js';
 
@@ -9,9 +9,12 @@ const hits = new Map();           // простой лимит в памяти �
 
 export default {
   async fetch(req, env) {
+    const { pathname } = new URL(req.url);
+    if (!pathname.startsWith('/api/')) return env.ASSETS ? env.ASSETS.fetch(req) : new Response('Not found', { status: 404 });
+
     const cors = corsHeaders(req, env);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (req.method !== 'POST' || new URL(req.url).pathname !== '/audit') return json({ error: 'not_found' }, 404, cors);
+    if (req.method !== 'POST' || pathname !== '/api/audit') return json({ error: 'not_found' }, 404, cors);
     if (!cors['Access-Control-Allow-Origin']) return json({ error: 'forbidden' }, 403, cors);
 
     const ip = req.headers.get('CF-Connecting-IP') || 'local';
@@ -76,9 +79,11 @@ async function askGemini(input, env) {
 }
 
 function corsHeaders(req, env) {
+  // Разрешены: сам сайт (тот же домен), адреса из ALLOWED_ORIGINS и localhost для разработки
   const origin = req.headers.get('Origin') || '';
   const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
-  const ok = allowed.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
+  const ok = origin === new URL(req.url).origin || allowed.includes(origin)
+    || /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
   return {
     ...(ok ? { 'Access-Control-Allow-Origin': origin } : {}),
     'Access-Control-Allow-Methods': 'POST, OPTIONS',

@@ -1,6 +1,6 @@
 ---
 import type { Dict, Lang } from '../i18n/content';
-import { lurl } from '../lib/url';
+import { url, lurl } from '../lib/url';
 const { t, lang } = Astro.props as { t: Dict; lang: Lang };
 const a = t.audit;
 const steps = [
@@ -8,8 +8,8 @@ const steps = [
   { name: 'sources', ...a.q.sources, rows: 2 },
   { name: 'volume', ...a.q.volume, rows: 2 },
 ];
-// Адрес воркера с ИИ: задаётся при сборке, в разработке — локальный wrangler dev
-const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://localhost:8787' : '');
+// ИИ отвечает на том же домене (/api/audit). В astro dev — через локальный wrangler dev на :8787
+const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://localhost:8787/api/audit' : url('/api/audit'));
 ---
 <section class="audit" id="demo">
   <div class="wrap">
@@ -117,7 +117,7 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
     if (matchMedia('(max-width: 920px)').matches) proto.scrollIntoView({ behavior: 'smooth', block: 'start' });
     try {
       if (!C.api) throw new Error('no_api');
-      const res = await fetch(`${C.api.replace(/\/$/, '')}/audit`, {
+      const res = await fetch(C.api, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lang: C.lang, process, sources: field('sources').value, volume: field('volume').value }),

@@ -1,0 +1,19 @@
+// Cloudflare: один воркер отдаёт статический сайт из dist и отвечает ИИ на /api/*
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "anadept",
+  "main": "worker/src/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // Запускать воркер рядом с серверами Google, а не рядом с посетителем (важно для РБ/РФ)
+  "placement": { "mode": "smart" },
+  "vars": {
+    "GEMINI_MODEL": "gemini-2.5-flash"
+  }
+  // Ключ задаётся секретом GEMINI_API_KEY в панели Cloudflare (Settings → Variables and Secrets)
+}
