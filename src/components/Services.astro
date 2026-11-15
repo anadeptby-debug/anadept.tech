@@ -1,43 +1,40 @@
 ---
-import type { Dict } from '../i18n/content';
-const { t } = Astro.props as { t: Dict };
+import type { Dict, Lang } from '../i18n/content';
+import { lurl } from '../lib/url';
+const { t, lang } = Astro.props as { t: Dict; lang: Lang };
 const s = t.services;
 ---
 <section class="services" id="services">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">{s.eyebrow}</span>
-      <h2>{s.title}</h2>
+      <h2>{s.listTitle}</h2>
     </div>
     <div class="grid">
       {s.items.map((it, i) => (
-        <a href="#contact" class="svc reveal" style={`transition-delay:${(i % 2) * 70}ms`} data-cursor={s.cursor}>
-          <span class="area">{it.area}</span>
-          <h3>{it.q}</h3>
+        <a href={lurl(lang, '/contact/')} class="svc reveal" style={`transition-delay:${(i % 3) * 70}ms`} data-cursor={s.cursor}>
+          <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{it.t}</h3>
           <p>{it.d}</p>
-          <span class="tags mono">{it.tags.join(' · ')}<span class="arr">→</span></span>
+          <span class="arr" aria-hidden="true">→</span>
         </a>
       ))}
     </div>
-    <p class="extra reveal" set:html={s.extra} />
   </div>
 </section>
 
 <style>
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .svc {
-    display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 36px 32px;
+    position: relative; display: grid; grid-template-rows: auto auto 1fr; gap: 14px; padding: 32px 30px 56px;
     background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
     transition: transform .4s var(--ease), box-shadow .4s, border-color .3s;
   }
   .svc:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-2); }
-  .area { font-size: 14px; font-weight: 600; color: var(--accent); }
-  .svc h3 { font-size: clamp(20px, 1.9vw, 24px); line-height: 1.25; }
-  .svc p { color: var(--muted); font-size: 16px; line-height: 1.6; }
-  .tags { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); padding-top: 16px; border-top: 1px dashed var(--line-2); }
-  .arr { color: var(--accent); opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s var(--ease); }
+  .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .svc h3 { font-size: clamp(20px, 1.8vw, 24px); line-height: 1.2; }
+  .svc p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+  .arr { position: absolute; right: 28px; bottom: 22px; color: var(--accent); opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s var(--ease); }
   .svc:hover .arr { opacity: 1; transform: none; }
-  .extra { margin-top: 28px; color: var(--muted); font-size: 16px; }
-  .extra :global(b) { color: var(--ink); font-weight: 600; }
-  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } .svc { padding: 28px 24px; } }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .svc { padding: 26px 22px 44px; } }
 </style>

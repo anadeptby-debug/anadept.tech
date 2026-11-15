@@ -1,6 +1,8 @@
 ---
-import type { Dict } from '../i18n/content';
-const { t } = Astro.props as { t: Dict };
+import type { Dict, Lang } from '../i18n/content';
+import { lurl } from '../lib/url';
+const { t, lang } = Astro.props as { t: Dict; lang: Lang };
+const contact = lurl(lang, '/contact/');
 const h = t.hero;
 ---
 <section class="hero" aria-labelledby="hero-title">
@@ -9,8 +11,8 @@ const h = t.hero;
     <h1 id="hero-title">{h.title.map((l) => <span>{l}</span>)}</h1>
     <p class="description">{h.lead}</p>
     <div class="actions">
-      <a class="btn-outline" href="#services">{h.cta2}</a>
-      <a class="btn-split" href="#contact">
+      <a class="btn-outline" href={lurl(lang, '/services/')}>{h.cta2}</a>
+      <a class="btn-split" href={contact}>
         <span class="bs-label">{h.cta}</span>
         <span class="bs-arrow" aria-hidden="true"><i></i></span>
       </a>
@@ -36,7 +38,7 @@ const h = t.hero;
   <form method="dialog"><button class="svc-close" aria-label={h.strip.close} value="close">×</button></form>
   <h2 class="svc-title"></h2>
   <p class="svc-desc"></p>
-  <a href="#contact" class="btn svc-cta">{h.cta}</a>
+  <a href={contact} class="btn svc-cta">{h.cta}</a>
 </dialog>
 
 <script>

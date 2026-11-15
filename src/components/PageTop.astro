@@ -1,0 +1,24 @@
+---
+interface Props { eyebrow: string; title: string; lead?: string }
+const { eyebrow, title, lead } = Astro.props;
+---
+<section class="ptop">
+  <div class="inner">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    {lead && <p class="description">{lead}</p>}
+  </div>
+</section>
+
+<style>
+  .ptop { padding: 56px 24px 104px; text-align: center; }
+  .inner { max-width: 960px; margin-inline: auto; }
+  .eyebrow { justify-content: center; color: #c7cad3; }
+  h1 { margin-top: 20px; font-size: clamp(42px, 6vw, 80px); line-height: 1; letter-spacing: -.035em; text-wrap: balance; }
+  .description { max-width: 640px; margin: 20px auto 0; font-size: 18px; line-height: 28px; letter-spacing: .02em; color: var(--on-dark-muted); text-wrap: balance; }
+  @media (max-width: 700px) {
+    .ptop { padding: 40px 18px 64px; }
+    h1 { font-size: clamp(32px, 9vw, 44px); line-height: 1.05; }
+    .description { font-size: 15px; line-height: 24px; }
+  }
+</style>

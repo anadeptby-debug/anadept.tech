@@ -37,6 +37,8 @@ jobs:
           # https://<user>.github.io и /<repo> — или свой домен и "/", если он подключён
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Адрес Cloudflare Worker с ИИ для демо (Settings → Secrets and variables → Actions → Variables)
+          PUBLIC_AUDIT_API: ${{ vars.AUDIT_API }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

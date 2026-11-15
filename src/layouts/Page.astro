@@ -1,0 +1,47 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import { dict, type Lang } from '../i18n/content';
+import { url, lurl } from '../lib/url';
+
+interface Props { lang: Lang; page: string }
+const { lang, page } = Astro.props;
+const t = dict[lang];
+const path = page ? `/${page}/` : '/';
+const navItem = t.nav.links.find((l) => l.page === page);
+const title = navItem ? `${navItem.label} — Anadept` : t.meta.title;
+---
+<Base lang={lang} t={t} title={title} path={path}>
+  <Header t={t} lang={lang} page={page} path={path} />
+  <main>
+    {page === '' ? <slot /> : (
+      <>
+        <div class="page-top"><slot name="top" /></div>
+        <div class="sheet"><div class="sheet-in"><slot /></div></div>
+      </>
+    )}
+  </main>
+  <footer class="ftr">
+    <div class="wrap ftr-in">
+      <a href={lurl(lang, '/')}><img class="logo" src={url('/brand/logo-center.png')} alt="Anadept" width="117" height="24" /></a>
+      <nav class="f-nav">{t.nav.links.map((l) => <a href={lurl(lang, l.href)}>{l.label}</a>)}</nav>
+      <span>{t.footer.rights}</span>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  /* Внутренние страницы: тёмный верх под шапкой + белая панель со скруглением */
+  .page-top { background: var(--dark); color: var(--on-dark); padding-top: 112px; }
+  .sheet { background: var(--dark); }
+  .sheet-in { background: var(--milk); border-radius: 72px 72px 0 0; padding-top: clamp(24px, 3vw, 40px); }
+  .ftr { padding: 40px 0 96px; color: var(--muted); font-size: 14px; }
+  .ftr-in { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
+  .f-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  .f-nav a:hover { color: var(--ink); }
+  .logo { display: block; height: 24px; width: auto; }
+  @media (max-width: 700px) {
+    .page-top { padding-top: 76px; }
+    .sheet-in { border-radius: 36px 36px 0 0; }
+  }
+</style>

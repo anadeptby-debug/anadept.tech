@@ -77,15 +77,17 @@ p { margin: 0; }
   display: inline-flex; align-items: center; gap: 9px;
   font-family: var(--font); font-size: 13px; font-weight: 500; letter-spacing: .055em; text-transform: uppercase; color: var(--muted);
 }
-/* Звёздочка-маркер, как в макете */
-.eyebrow::before, .asterisk {
-  content: ''; width: 15px; height: 15px; flex: none;
-  background:
-    linear-gradient(var(--orange), var(--orange)) center / 1.5px 100% no-repeat,
-    linear-gradient(var(--orange), var(--orange)) center / 100% 1.5px no-repeat,
-    linear-gradient(45deg, transparent calc(50% - .75px), var(--orange) calc(50% - .75px), var(--orange) calc(50% + .75px), transparent calc(50% + .75px)),
-    linear-gradient(-45deg, transparent calc(50% - .75px), var(--orange) calc(50% - .75px), var(--orange) calc(50% + .75px), transparent calc(50% + .75px));
+/* Маркер: пульсирующая персиковая точка */
+.eyebrow::before {
+  content: ''; width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--peach); animation: eyebrow-pulse 2s infinite;
 }
+@keyframes eyebrow-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,155,125,.55); }
+  70% { box-shadow: 0 0 0 7px rgba(255,155,125,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,155,125,0); }
+}
+@media (prefers-reduced-motion: reduce) { .eyebrow::before { animation: none; } }
 .pill {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 12px; border: 1px solid var(--line-2); border-radius: 6px;
