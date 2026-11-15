@@ -1,0 +1,67 @@
+---
+import Concept from '../../layouts/Concept.astro';
+import ConceptHeader from '../../components/concepts/ConceptHeader.astro';
+import ConceptHero from '../../components/concepts/ConceptHero.astro';
+import ConceptDemo from '../../components/concepts/ConceptDemo.astro';
+import { url } from '../../lib/url';
+
+const situations = [
+  { n: '01', title: 'Заявки приходят из разных каналов', before: 'Ответственного назначают вручную, историю собирают по чатам.', after: 'Система объединяет обращения, готовит ответ и передаёт сложный вопрос менеджеру.', tag: 'Коммуникации' },
+  { n: '02', title: 'Документы переносят в 1С руками', before: 'Счета и накладные повторно вводят, расхождения находят слишком поздно.', after: 'Документ распознаётся, сверяется с правилами и появляется в 1С как черновик.', tag: 'Документооборот' },
+  { n: '03', title: 'Данные не успевают за процессом', before: 'CRM, таблицы и учётная система расходятся и требуют ручной сверки.', after: 'Интеграции обновляют данные по событию и показывают исключения человеку.', tag: 'Интеграции' },
+];
+---
+<Concept concept="c" title="Концепция C — Anadept" description="Более выразительная версия Anadept внутри существующей айдентики." themeColor="#121722">
+  <ConceptHeader concept="c" />
+  <main id="content">
+    <ConceptHero variant="c" />
+    <section class="c-services rounded-transition section-space" id="services" aria-labelledby="c-services-title">
+      <div class="concept-wrap">
+        <div class="section-head">
+          <div><p class="brand-label brand-label--dark">Текущая ситуация</p><h2 id="c-services-title">Вы видите проблему. Мы собираем рабочий процесс.</h2></div>
+          <p>Без отдельного «мира автоматизации»: результат появляется в программах, которыми команда уже пользуется.</p>
+        </div>
+        <div class="c-situations">
+          {situations.map((item) => (
+            <article class="c-row">
+              <div class="c-row__title"><span>{item.n}</span><small>{item.tag}</small><h3>{item.title}</h3></div>
+              <div class="c-row__state"><small>Сейчас</small><p>{item.before}</p></div>
+              <div class="c-row__state c-row__state--after"><small>После</small><p>{item.after}</p><a href={url('/#contact')} aria-label={`Обсудить: ${item.title}`}>→</a></div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+    <ConceptDemo variant="c" />
+  </main>
+</Concept>
+
+<style>
+  :global(.ref-hero--c) { padding-bottom: 158px; }
+  :global(.ref-hero--c .ref-hero__inner) { max-width: 1040px; }
+  :global(.hero-rail) { width: min(100%, 760px); display: grid; grid-template-columns: auto 1fr auto 1fr auto; gap: 14px; align-items: center; margin: 50px auto 0; color: #adb3bf; font-size: 12px; }
+  :global(.hero-rail i) { height: 1px; background: #ffffff35; position: relative; }
+  :global(.hero-rail i::after) { content: ''; position: absolute; top: 50%; right: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--peach); transform: translateY(-50%); }
+  .c-services { padding-top: 126px; }
+  .c-situations { border-top: 1px solid var(--line); }
+  .c-row { display: grid; grid-template-columns: 1.05fr .9fr 1.05fr; border-bottom: 1px solid var(--line); }
+  .c-row > div { min-height: 250px; padding: 30px 28px; border-right: 1px solid var(--line); }
+  .c-row > div:first-child { padding-left: 0; }
+  .c-row > div:last-child { border-right: 0; }
+  .c-row__title { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; gap: 20px 14px; }
+  .c-row__title > span { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .c-row__title small { justify-self: end; padding: 5px 9px; border: 1px solid #d8dce3; border-radius: 999px; color: var(--muted); }
+  .c-row h3 { grid-column: 1 / -1; align-self: end; font-size: clamp(27px, 3vw, 42px); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; }
+  .c-row__state { display: flex; flex-direction: column; justify-content: space-between; gap: 22px; color: var(--muted); }
+  .c-row__state small { color: var(--muted); text-transform: uppercase; letter-spacing: .055em; }
+  .c-row__state p { font-size: 17px; }
+  .c-row__state--after { position: relative; margin: 12px; min-height: 226px !important; padding: 24px !important; border: 0 !important; border-radius: 22px; background: #fff0eb; color: var(--dark); }
+  .c-row__state--after a { position: absolute; right: 20px; bottom: 20px; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--peach); color: var(--dark); }
+  :global(.ref-demo--c) { background: var(--dark); color: #fff; }
+  :global(.ref-demo--c .brand-label--dark), :global(.ref-demo--c .section-head p) { color: #adb3bf; }
+  :global(.ref-demo--c .ref-demo__questions), :global(.ref-demo--c .ref-field) { border-color: #303746; }
+  :global(.ref-demo--c .ref-option span) { border-color: #3b4352; background: transparent; color: #e3e6ec; }
+  :global(.ref-demo--c .ref-option input:checked + span) { border-color: var(--peach); background: var(--peach); color: var(--dark); }
+  @media (max-width: 900px) { .c-row { grid-template-columns: 1fr; padding: 28px 0; } .c-row > div { min-height: 0; padding: 24px 0; border-right: 0; border-bottom: 1px solid var(--line); } .c-row__title { min-height: 180px !important; } .c-row__state--after { margin: 16px 0 0; } }
+  @media (max-width: 600px) { :global(.ref-hero--c) { padding-bottom: 112px; } :global(.hero-rail) { grid-template-columns: auto 1fr auto; } :global(.hero-rail span:nth-of-type(2)), :global(.hero-rail i:nth-of-type(2)) { display: none; } .c-services { padding-top: 92px; } }
+</style>

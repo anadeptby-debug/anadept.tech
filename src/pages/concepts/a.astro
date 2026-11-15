@@ -1,0 +1,54 @@
+---
+import Concept from '../../layouts/Concept.astro';
+import ConceptHeader from '../../components/concepts/ConceptHeader.astro';
+import ConceptHero from '../../components/concepts/ConceptHero.astro';
+import ConceptDemo from '../../components/concepts/ConceptDemo.astro';
+import { url } from '../../lib/url';
+
+const services = [
+  { area: 'Заявки и обращения', title: 'Клиент написал — система отвечает и передаёт сложное менеджеру.', text: 'Telegram, WhatsApp и сайт работают по вашему прайсу и правилам. Заявка сразу появляется в CRM.', tags: 'Telegram · WhatsApp · CRM' },
+  { area: 'Документы и учёт', title: 'Документ попадает в 1С уже распознанным и сверенным.', text: 'Письмо или скан превращается в черновик. Человек подтверждает результат и разбирает только расхождения.', tags: '1С · PDF · Почта · Excel' },
+  { area: 'Звонки и продажи', title: 'Каждый разговор превращается в понятный следующий шаг.', text: 'Система расшифровывает звонок, фиксирует договорённости и сохраняет результат в CRM.', tags: 'Телефония · CRM · Аналитика' },
+  { area: 'Рутина между системами', title: 'Данные переходят между сервисами без повторного ввода.', text: 'Связываем 1С, CRM, почту и таблицы в один управляемый процесс.', tags: '1С · CRM · Excel · API' },
+];
+---
+<Concept concept="a" title="Концепция A — Anadept" description="Деликатная полировка текущего визуального направления Anadept." themeColor="#121722">
+  <ConceptHeader concept="a" />
+  <main id="content">
+    <ConceptHero variant="a" />
+    <section class="a-services rounded-transition section-space" id="services" aria-labelledby="a-services-title">
+      <div class="concept-wrap">
+        <div class="a-strip" aria-label="Основные направления"><span>Что мы делаем</span><b>Автоматизация</b><b>ИИ-агенты</b><b>CRM и ERP</b><b>Веб-системы</b></div>
+        <div class="section-head">
+          <div><p class="brand-label brand-label--dark">Услуги</p><h2 id="a-services-title">Что можно автоматизировать уже сейчас.</h2></div>
+          <p>Начинаем с понятного процесса, подключаем существующие системы и оставляем человеку решения, которые нельзя отдавать алгоритму.</p>
+        </div>
+        <div class="a-grid">
+          {services.map((service) => (
+            <a class="a-card" href={url('/#contact')}>
+              <span>{service.area}</span><h3>{service.title}</h3><p>{service.text}</p><small>{service.tags}<i aria-hidden="true">→</i></small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+    <ConceptDemo variant="a" />
+  </main>
+</Concept>
+
+<style>
+  .a-services { padding-top: 46px; }
+  .a-strip { min-height: 112px; display: grid; grid-template-columns: .8fr repeat(4, 1fr); gap: 24px; align-items: center; margin-bottom: 92px; border-bottom: 1px solid var(--line); }
+  .a-strip span { color: var(--muted); font-size: 14px; }
+  .a-strip b { font-family: var(--font-display); font-size: clamp(18px, 1.8vw, 24px); font-weight: 500; letter-spacing: -.025em; }
+  .a-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .a-card { min-height: 340px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; padding: 34px 32px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); transition: transform 220ms var(--ease), box-shadow 220ms ease, border-color 220ms ease; }
+  .a-card > span { color: #b84426; font-size: 14px; font-weight: 600; }
+  .a-card h3 { max-width: 530px; font-size: clamp(26px, 2.6vw, 38px); font-weight: 500; line-height: 1.16; letter-spacing: -.035em; }
+  .a-card p { max-width: 560px; color: var(--muted); font-size: 17px; }
+  .a-card small { display: flex; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px dashed #d5d9e0; color: var(--muted); }
+  .a-card i { color: #b84426; font-style: normal; transition: transform 160ms var(--ease); }
+  @media (hover:hover) and (pointer:fine) { .a-card:hover { transform: translateY(-3px); border-color: #d2d6de; box-shadow: 0 22px 45px -36px rgba(18,23,34,.36); } .a-card:hover i { transform: translateX(3px); } }
+  @media (max-width: 900px) { .a-strip { grid-template-columns: repeat(2, 1fr); padding: 30px 0; } .a-strip span { grid-column: 1 / -1; } .a-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .a-strip { margin-bottom: 68px; } .a-card { min-height: 0; padding: 28px 24px; } }
+</style>

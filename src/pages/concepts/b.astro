@@ -1,0 +1,68 @@
+---
+import Concept from '../../layouts/Concept.astro';
+import ConceptHeader from '../../components/concepts/ConceptHeader.astro';
+import ConceptHero from '../../components/concepts/ConceptHero.astro';
+import ConceptDemo from '../../components/concepts/ConceptDemo.astro';
+import { url } from '../../lib/url';
+
+const services = [
+  { n: '01', title: 'Автоматизация процессов', text: 'Повторяемые операции переходят в управляемый сценарий с понятными правилами и исключениями.', tags: ['1С', 'CRM', 'Excel'] },
+  { n: '02', title: 'ИИ-агенты', text: 'Агент читает обращения и документы, готовит действие и передаёт сомнительные случаи человеку.', tags: ['Заявки', 'Документы', 'Коммуникации'] },
+  { n: '03', title: 'Интеграции систем', text: 'Данные проходят между сервисами без ручного копирования и повторного ввода.', tags: ['API', 'Телефония', 'Мессенджеры'] },
+  { n: '04', title: 'Внутренние системы', text: 'Создаём рабочие интерфейсы для процессов, которым не подходит готовый продукт.', tags: ['Кабинеты', 'Панели', 'Согласования'] },
+];
+---
+<Concept concept="b" title="Концепция B — Anadept" description="Баланс текущего визуального языка Anadept и композиционных принципов Codelevate." themeColor="#121722">
+  <ConceptHeader concept="b" />
+  <main id="content">
+    <ConceptHero variant="b" />
+    <section class="b-services rounded-transition section-space" id="services" aria-labelledby="b-services-title">
+      <div class="concept-wrap">
+        <div class="section-head b-head">
+          <div><p class="brand-label brand-label--dark">Как мы помогаем</p><h2 id="b-services-title">Одна команда, чтобы собрать и запустить процесс.</h2></div>
+          <p>Сначала разбираемся, где возникает ручная работа. Затем связываем данные, правила и интерфейс в один понятный контур.</p>
+        </div>
+        <div class="b-list">
+          {services.map((service, index) => (
+            <details class="b-service" open={index === 0}>
+              <summary><span>{service.n}</span><h3>{service.title}</h3><i aria-hidden="true"></i></summary>
+              <div class="b-service__body"><p>{service.text}</p><ul>{service.tags.map((tag) => <li>{tag}</li>)}</ul><a href={url('/#contact')}>Обсудить задачу <span aria-hidden="true">→</span></a></div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+    <ConceptDemo variant="b" />
+  </main>
+</Concept>
+
+<style>
+  :global(.ref-hero--b h1) { max-width: 980px; margin-inline: auto; }
+  :global(.ref-hero--b .ref-hero__lead) { max-width: 760px; }
+  .b-services { padding-top: 128px; }
+  .b-head { margin-bottom: 76px; }
+  .b-list { border-top: 1px solid var(--line); }
+  .b-service { border-bottom: 1px solid var(--line); }
+  .b-service summary { min-height: 112px; display: grid; grid-template-columns: 70px 1fr 48px; gap: 24px; align-items: center; list-style: none; cursor: pointer; }
+  .b-service summary::-webkit-details-marker { display: none; }
+  .b-service summary > span { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .b-service h3 { font-size: clamp(30px, 3.8vw, 54px); font-weight: 500; letter-spacing: -.035em; }
+  .b-service summary i { position: relative; width: 44px; height: 44px; border: 1px solid #d8dce3; border-radius: 50%; }
+  .b-service summary i::before, .b-service summary i::after { content: ''; position: absolute; inset: 50% auto auto 50%; width: 16px; height: 1px; background: currentColor; transform: translate(-50%,-50%); }
+  .b-service summary i::after { transform: translate(-50%,-50%) rotate(90deg); transition: transform 180ms var(--ease); }
+  .b-service[open] summary i { background: var(--peach); border-color: var(--peach); }
+  .b-service[open] summary i::after { transform: translate(-50%,-50%) rotate(0); }
+  .b-service__body { display: grid; grid-template-columns: 1fr auto auto; gap: 32px; align-items: center; padding: 0 0 34px 94px; animation: b-open 220ms var(--ease) both; }
+  .b-service__body p { max-width: 620px; color: var(--muted); font-size: 18px; }
+  .b-service__body ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .b-service__body li { padding: 6px 10px; border: 1px solid #d8dce3; border-radius: 999px; color: var(--muted); font-size: 13px; }
+  .b-service__body a { display: inline-flex; gap: 10px; white-space: nowrap; font-weight: 600; }
+  @keyframes b-open { from { transform: translateY(-7px); opacity: 0; } }
+  :global(.ref-demo--b) { background: #fff; }
+  :global(.ref-demo--b .ref-protocol) { background: var(--dark); color: #fff; border-color: var(--dark); }
+  :global(.ref-demo--b .ref-protocol__top), :global(.ref-demo--b .ref-protocol dt) { color: #aeb4bf; }
+  :global(.ref-demo--b .ref-protocol__top span:last-child) { color: var(--peach); }
+  :global(.ref-demo--b .ref-protocol dt), :global(.ref-demo--b .ref-protocol dd), :global(.ref-demo--b .ref-protocol__top) { border-color: #313847; }
+  @media (max-width: 900px) { .b-service__body { grid-template-columns: 1fr; padding-left: 94px; } }
+  @media (max-width: 600px) { .b-services { padding-top: 92px; } .b-service summary { grid-template-columns: 42px 1fr 42px; gap: 10px; min-height: 96px; } .b-service h3 { font-size: 27px; } .b-service__body { padding-left: 52px; } }
+</style>

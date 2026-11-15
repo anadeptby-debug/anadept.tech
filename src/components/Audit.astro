@@ -1,15 +1,8 @@
 ---
-import type { Dict, Lang } from '../i18n/content';
-import { url, lurl } from '../lib/url';
-const { t, lang } = Astro.props as { t: Dict; lang: Lang };
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
 const a = t.audit;
-const steps = [
-  { name: 'process', ...a.q.process, rows: 3 },
-  { name: 'sources', ...a.q.sources, rows: 2 },
-  { name: 'volume', ...a.q.volume, rows: 2 },
-];
-// ИИ отвечает на том же домене (/api/audit). В astro dev — через локальный wrangler dev на :8787
-const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://localhost:8787/api/audit' : url('/api/audit'));
+const q = a.q;
 ---
 <section class="audit" id="demo">
   <div class="wrap">
@@ -19,44 +12,40 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
       <p class="lead">{a.lead}</p>
     </div>
 
-    <div class="grid" data-audit={JSON.stringify({ api, lang, empty: a.empty, errors: a.errors })}>
-      <form class="qs reveal" novalidate>
-        {steps.map((s, i) => (
-          <fieldset>
-            <legend><span class="qn mono">{i + 1}</span><label for={`q-${s.name}`}>{s.l}</label></legend>
-            <textarea id={`q-${s.name}`} name={s.name} rows={s.rows} maxlength="600" placeholder={s.ph}></textarea>
-            <div class="chips" aria-label={a.hint}>
-              {s.chips.map((c) => <button type="button" class="hint" data-for={s.name}>{c}</button>)}
-            </div>
-          </fieldset>
-        ))}
-        <div class="go">
-          <button class="btn dark" type="submit">{a.submit}<span class="arr">→</span></button>
-          <p class="privacy">{a.privacy}</p>
-          <p class="err" role="alert"></p>
-        </div>
+    <div class="grid" data-audit={JSON.stringify({ processes: a.processes, sourceB: a.sourceB, formatPilot: a.formatPilot, formatSaas: a.formatSaas })}>
+      <form class="qs reveal" onsubmit="return false">
+        <fieldset>
+          <legend><span class="qn mono">1</span>{q.process.l}</legend>
+          <div class="opts">
+            {q.process.o.map((o, i) => <label class="opt"><input type="radio" name="process" value={i} checked={i === 0} /><span>{o}</span></label>)}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><span class="qn mono">2</span>{q.sources.l} <small>{q.sources.hint}</small></legend>
+          <div class="opts">
+            {q.sources.o.map((o, i) => <label class="opt"><input type="checkbox" name="sources" value={i} checked={i === 0 || i === 2} /><span>{o}</span></label>)}
+          </div>
+        </fieldset>
+        <fieldset class="range">
+          <legend><span class="qn mono">3</span>{q.volume.l}</legend>
+          <input type="range" name="volume" min="5" max="300" step="5" value="40" aria-label={q.volume.l} />
+          <output class="mono" data-o="volume">40</output><span class="unit mono">{q.volume.unit}</span>
+        </fieldset>
       </form>
 
-      <article class="proto reveal" data-state="idle" aria-live="polite" aria-busy="false">
+      <article class="proto reveal" aria-live="polite">
+        <div class="perf" aria-hidden="true"></div>
         <header class="p-head mono"><span>{a.protoTitle}</span><span class="stamp">{a.stamp}</span></header>
-
-        <p class="idle-txt">{a.placeholder}</p>
-        <div class="loading-txt"><span class="spin" aria-hidden="true"></span>{a.loading}</div>
-
-        <div class="result">
-          <div class="hours">
-            <span class="mono lbl">{a.fields.hours}</span>
-            <b class="mono"><span data-f="hours">0</span> {a.hoursUnit}</b>
-          </div>
-          <dl>
-            <dt>{a.fields.bottlenecks}</dt><dd><ul data-f="bottlenecks"></ul></dd>
-            <dt>{a.fields.agent}</dt><dd data-f="agent"></dd>
-            <dt>{a.fields.format}</dt><dd data-f="format"></dd>
-            <dt>{a.fields.assumptions}</dt><dd class="muted" data-f="assumptions"></dd>
-          </dl>
+        <div class="hours">
+          <span class="mono lbl">{a.fields.hours}</span>
+          <b class="mono"><span data-f="hours">0</span> {a.hoursUnit}</b>
         </div>
-
-        <a href={lurl(lang, '/contact/')} class="btn" data-magnetic>{a.cta}<span class="arr">→</span></a>
+        <dl>
+          <dt>{a.fields.bottlenecks}</dt><dd><ul data-f="bottlenecks"></ul></dd>
+          <dt>{a.fields.agent}</dt><dd data-f="agent"></dd>
+          <dt>{a.fields.format}</dt><dd data-f="format"></dd>
+        </dl>
+        <a href="#contact" class="btn" data-magnetic>{a.cta}<span class="arr">→</span></a>
         <p class="disc">{a.disclaimer}</p>
       </article>
     </div>
@@ -64,136 +53,85 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
 </section>
 
 <script>
-  type Res = { hours: number; bottlenecks: string[]; agent: string; format: string; assumptions: string; off_topic: boolean; error?: string };
+  type P = { min: number; share: number; b: string[]; agent: string };
   const root = document.querySelector<HTMLElement>('[data-audit]')!;
-  const C = JSON.parse(root.dataset.audit!) as { api: string; lang: string; empty: string; errors: Record<string, string> };
+  const D = JSON.parse(root.dataset.audit!) as { processes: P[]; sourceB: string[]; formatPilot: string; formatSaas: string };
   const form = root.querySelector<HTMLFormElement>('.qs')!;
   const proto = root.querySelector<HTMLElement>('.proto')!;
-  const errEl = form.querySelector<HTMLElement>('.err')!;
-  const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
   const f = (k: string) => proto.querySelector<HTMLElement>(`[data-f=${k}]`)!;
-  const field = (n: string) => form.querySelector<HTMLTextAreaElement>(`[name=${n}]`)!;
-
-  // Подсказки: добавляют текст в поле или убирают его оттуда
-  const sync = () => form.querySelectorAll<HTMLButtonElement>('.hint').forEach((b) => {
-    b.setAttribute('aria-pressed', String(field(b.dataset.for!).value.includes(b.textContent!)));
-  });
-  form.querySelectorAll<HTMLButtonElement>('.hint').forEach((b) => b.addEventListener('click', () => {
-    const ta = field(b.dataset.for!);
-    const txt = b.textContent!;
-    if (ta.value.includes(txt)) {
-      ta.value = ta.value.replace(txt, '').replace(/,\s*,/g, ',').replace(/^[\s,]+|[\s,]+$/g, '');
-    } else {
-      ta.value = ta.value.trim() ? `${ta.value.trim().replace(/[,.]$/, '')}, ${txt}` : txt;
-    }
-    sync();
-  }));
-  form.addEventListener('input', () => { sync(); errEl.textContent = ''; });
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 
   let shown = 0;
   function countTo(el: HTMLElement, to: number) {
     const from = shown; const t0 = performance.now();
     const step = (now: number) => {
-      const p = Math.min(1, (now - t0) / 700);
+      const p = Math.min(1, (now - t0) / 600);
       el.textContent = String(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
       if (p < 1) requestAnimationFrame(step); else shown = to;
     };
     requestAnimationFrame(step);
   }
 
-  const setState = (s: 'idle' | 'loading' | 'done') => {
-    proto.dataset.state = s;
-    proto.setAttribute('aria-busy', String(s === 'loading'));
-    submit.disabled = s === 'loading';
-  };
+  function update() {
+    const fd = new FormData(form);
+    const p = D.processes[+fd.get('process')!];
+    const src = fd.getAll('sources').map(String);
+    const vol = +fd.get('volume')!;
+    const range = form.querySelector<HTMLInputElement>('input[type=range]')!;
+    form.querySelector('[data-o=volume]')!.textContent = String(vol);
+    range.style.setProperty('--p', `${((vol - +range.min) / (+range.max - +range.min)) * 100}%`);
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const process = field('process').value.trim();
-    if (process.length < 3) { errEl.textContent = C.empty; field('process').focus(); return; }
-    errEl.textContent = '';
-    const prev = proto.dataset.state === 'done' ? 'done' : 'idle';
-    setState('loading');
-    if (matchMedia('(max-width: 920px)').matches) proto.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    try {
-      if (!C.api) throw new Error('no_api');
-      const res = await fetch(C.api, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lang: C.lang, process, sources: field('sources').value, volume: field('volume').value }),
-      });
-      const r = (await res.json()) as Res;
-      if (!res.ok || r.error) throw new Error(r.error || 'generic');
-      f('bottlenecks').replaceChildren(...r.bottlenecks.map((b) => Object.assign(document.createElement('li'), { textContent: b })));
-      f('agent').textContent = r.agent;
-      f('format').textContent = r.format;
-      f('assumptions').textContent = r.assumptions;
-      proto.classList.toggle('off', r.off_topic);
-      setState('done');
-      countTo(f('hours'), r.hours);
-    } catch (err) {
-      setState(prev);
-      const code = err instanceof Error ? err.message : '';
-      errEl.textContent = C.errors[code] || C.errors.generic;
-    }
-  });
+    const hours = Math.round((vol * p.min * p.share * 21) / 60);
+    f('bottlenecks').innerHTML = [...p.b, ...src.map((s) => D.sourceB[+s])].map((b) => `<li>${esc(b)}</li>`).join('');
+    f('agent').textContent = p.agent;
+    countTo(f('hours'), hours);
+    f('format').textContent = hours < 15 ? D.formatSaas : D.formatPilot;
+    proto.classList.remove('flash'); void proto.offsetWidth; proto.classList.add('flash');
+  }
+  form.addEventListener('input', update);
+  update();
 </script>
 
 <style>
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
-  fieldset { border: 0; border-top: 1px solid var(--line-2); margin: 0; padding: 24px 0 28px; display: grid; gap: 12px; }
-  legend { float: left; width: 100%; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 18px; padding: 0; margin-bottom: 4px; }
-  .qn { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--dark); color: var(--milk); font-size: 12px; flex: none; }
-  textarea {
-    clear: both; width: 100%; resize: vertical; min-height: 56px; padding: 14px 16px; border-radius: var(--radius-s);
-    border: 1px solid var(--line-2); background: var(--milk); font-size: 15px; line-height: 1.5; transition: border-color .2s, box-shadow .2s;
-  }
-  textarea::placeholder { color: var(--faint); }
-  textarea:hover { border-color: var(--muted); }
-  textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .hint {
-    display: inline-flex; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--milk);
-    font-size: 13px; cursor: pointer; transition: border-color .2s, background .2s, color .2s;
-  }
-  .hint::before { content: '+'; margin-right: 6px; color: var(--accent); }
-  .hint:hover { border-color: var(--ink); }
-  .hint[aria-pressed="true"] { background: var(--dark); color: var(--on-dark); border-color: var(--dark); }
-  .hint[aria-pressed="true"]::before { content: '✓'; color: var(--peach); }
-  .go { display: grid; gap: 12px; justify-items: start; padding-top: 24px; border-top: 1px solid var(--line-2); }
-  .go .btn[disabled] { opacity: .55; cursor: progress; }
-  .privacy { font-size: 13px; color: var(--muted); }
-  .err { font-size: 14px; color: #c0392b; min-height: 1em; }
-  .err:empty { display: none; }
+  fieldset { border: 0; border-top: 1px solid var(--line-2); margin: 0; padding: 28px 0 36px; }
+  legend { float: left; width: 100%; display: flex; align-items: baseline; gap: 12px; font-weight: 500; font-size: 18px; padding: 0; margin-bottom: 18px; }
+  legend small { color: var(--faint); font-weight: 400; font-size: 14px; }
+  .qn { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--dark); color: var(--milk); font-size: 12px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 10px; clear: both; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt span { display: inline-flex; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--milk); font-size: 15px; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+  .opt:hover span { border-color: var(--ink); }
+  .opt input:checked + span { background: var(--dark); color: var(--on-dark); border-color: var(--dark); }
+  .opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .range { display: grid; grid-template-columns: 1fr auto auto; gap: 8px 10px; align-items: center; }
+  .range legend { grid-column: 1 / -1; }
+  .range output { font-size: 20px; min-width: 40px; text-align: right; }
+  .unit { color: var(--muted); font-size: 13px; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px; outline: none; background: linear-gradient(to right, var(--ink) var(--p, 50%), var(--line-2) var(--p, 50%)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--peach); border: 3px solid var(--milk); box-shadow: 0 0 0 1px var(--accent); }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--peach); border: 3px solid var(--milk); }
 
   .proto {
     position: sticky; top: 96px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 36px 34px 32px; display: grid; gap: 20px; justify-items: start; box-shadow: var(--shadow);
+    padding: 36px 34px 32px; display: grid; gap: 20px; justify-items: start;
+    box-shadow: var(--shadow);
   }
+  .perf { display: none; position: absolute; left: 0; right: 0; top: -6px; height: 12px; background: radial-gradient(circle at 6px 6px, var(--milk) 4px, transparent 4.5px) 0 0 / 14px 12px repeat-x; }
   .p-head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); font-size: 12px; letter-spacing: .055em; text-transform: uppercase; }
   .stamp { color: var(--accent); font-size: 11px; }
-
-  .idle-txt, .loading-txt, .result { display: none; width: 100%; }
-  [data-state="idle"] .idle-txt { display: block; color: var(--muted); font-size: 15px; padding: 28px 0; }
-  [data-state="loading"] .loading-txt { display: flex; align-items: center; gap: 12px; padding: 28px 0; color: var(--muted); font-size: 15px; }
-  [data-state="done"] .result { display: grid; gap: 20px; animation: ink .5s var(--ease); }
-  .spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--accent); animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes ink { from { opacity: 0; transform: translateY(6px); } }
-
   .hours { width: 100%; display: flex; justify-content: space-between; align-items: baseline; }
   .lbl { font-size: 12px; text-transform: uppercase; color: var(--muted); }
   .hours b { font-family: var(--font-head); font-size: 48px; font-weight: 500; letter-spacing: -0.05em; color: var(--accent); line-height: 1; }
-  .off .hours { display: none; }
   dl { margin: 0; width: 100%; display: grid; grid-template-columns: 130px 1fr; }
   dt, dd { padding: 14px 0; border-top: 1px dashed var(--line-2); margin: 0; }
   dt { font-family: var(--mono); font-size: 12px; text-transform: uppercase; color: var(--muted); padding-right: 12px; }
   dd { font-size: 15px; }
-  dd.muted { color: var(--muted); font-size: 14px; }
   dd ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
   dd li::before { content: '— '; color: var(--accent); }
+  .flash dd, .flash .hours { animation: ink .5s var(--ease); }
+  @keyframes ink { from { opacity: .35; } }
   .disc { font-size: 12px; color: var(--faint); }
-  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2s; } }
-  @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } .proto { position: relative; top: 0; scroll-margin-top: 90px; } }
+  @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } .proto { position: relative; top: 0; } }
   @media (max-width: 480px) { dl { grid-template-columns: 1fr; } dd { border-top: 0; padding-top: 0; } }
 </style>

@@ -1,31 +1,29 @@
 ---
-import type { Dict, Lang } from '../i18n/content';
-import { url, lurl } from '../lib/url';
-const { t, lang, page, path } = Astro.props as { t: Dict; lang: Lang; page: string; path: string };
-const home = lurl(lang, '/');
-const other = lurl(lang === 'ru' ? 'en' : 'ru', path);
-const contact = lurl(lang, '/contact/');
+import type { Dict } from '../i18n/content';
+import { url } from '../lib/url';
+const { t } = Astro.props as { t: Dict };
+const home = url(t.nav.other.href === '/' ? '/en/' : '/');
 ---
 <header class="hdr">
   <div class="wrap hdr-in">
     <a href={home} class="logo" aria-label="Anadept"><img src={url('/brand/logo-white-center.png')} alt="Anadept" width="122" height="25" /></a>
     <nav class="nav">
-      {t.nav.links.map((l) => <a href={lurl(lang, l.href)} class:list={{ cur: l.page && l.page === page }} aria-current={l.page && l.page === page ? 'page' : undefined}>{l.label}</a>)}
+      {t.nav.links.map((l) => <a href={l.href} data-nav={l.href.slice(1)}>{l.label}</a>)}
     </nav>
     <div class="hdr-r">
-      <a href={other} class="lang">{t.nav.other.label}</a>
-      <a href={contact} class="hdr-cta">{t.nav.cta}</a>
+      <a href={url(t.nav.other.href)} class="lang">{t.nav.other.label}</a>
+      <a href="#contact" class="hdr-cta">{t.nav.cta}</a>
       <button type="button" class="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
     </div>
   </div>
   <nav class="m-nav" aria-hidden="true">
     <div class="wrap">
-      {t.nav.links.map((l) => <a href={lurl(lang, l.href)}>{l.label}</a>)}
+      {t.nav.links.map((l) => <a href={l.href}>{l.label}</a>)}
     </div>
   </nav>
 </header>
 
-<a href={contact} class:list={["m-cta btn", { off: page === "contact" }]}>{t.nav.cta}<span class="arr">→</span></a>
+<a href="#contact" class="m-cta btn">{t.nav.cta}<span class="arr">→</span></a>
 
 <script>
   const h = document.querySelector<HTMLElement>('.hdr')!;
@@ -48,6 +46,11 @@ const contact = lurl(lang, '/contact/');
   burger.addEventListener('click', () => setOpen(!h.classList.contains('open')));
   h.querySelectorAll('.m-nav a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
 
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) links.forEach((l) => l.classList.toggle('cur', l.dataset.nav === e.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  links.forEach((l) => { const s = document.getElementById(l.dataset.nav!); if (s) io.observe(s); });
 </script>
 
 <style>
@@ -79,7 +82,7 @@ const contact = lurl(lang, '/contact/');
   .m-nav a:last-child { margin-bottom: 16px; }
   .open .m-nav { grid-template-rows: 1fr; }
 
-  .m-cta, .m-cta.off { display: none; }
+  .m-cta { display: none; }
   @media (min-width: 1081px) { .m-nav { display: none; } }
   @media (max-width: 1080px) { .nav { display: none; } .burger { display: block; } }
   @media (max-width: 920px) {

@@ -1,0 +1,18 @@
+---
+import { url } from '../../lib/url';
+interface Props { variant: 'a' | 'b' | 'c'; }
+const { variant } = Astro.props;
+---
+<section class={`ref-hero ref-hero--${variant}`} aria-labelledby={`${variant}-title`}>
+  <div class="ref-hero__inner">
+    <p class="brand-label">Автоматизация бизнес-процессов</p>
+    <h1 id={`${variant}-title`}><span>Автоматизация и ИИ</span><span>для вашего бизнеса</span></h1>
+    <p class="ref-hero__lead">Внедряем ИИ-агентов, интегрируем CRM и ERP, разрабатываем внутренние системы и автоматизируем рутинные задачи.</p>
+    <div class="ref-hero__actions">
+      <a class="ref-button ref-button--outline" href="#services">Наши услуги</a>
+      <a class="ref-button ref-button--primary" href={url('/#contact')}>Обсудить проект <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" /></svg></a>
+    </div>
+    <ul class="ref-hero__proof"><li>Анализ процессов</li><li>Внедрение</li><li>Поддержка</li></ul>
+    {variant === 'c' && <div class="hero-rail" aria-label="Маршрут работы"><span>Сигнал</span><i></i><span>Правила</span><i></i><span>Результат</span></div>}
+  </div>
+</section>

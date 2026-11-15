@@ -1,0 +1,73 @@
+---
+import { url } from '../../lib/url';
+interface Props { variant: 'a' | 'b' | 'c'; }
+const { variant } = Astro.props;
+---
+<section class={`ref-demo ref-demo--${variant} section-space`} id="demo" data-refined-demo>
+  <div class="concept-wrap">
+    <div class="section-head">
+      <div><p class="brand-label brand-label--dark">Демо</p><h2>Три вопроса — и черновик протокола по вашему процессу.</h2></div>
+      <p>Быстрая демонстрация логики: что можно передать системе, где нужны правила и в какой момент подключается человек.</p>
+    </div>
+    <div class="ref-demo__grid">
+      <form class="ref-demo__questions" onsubmit="return false">
+        <fieldset class="ref-field">
+          <legend><span>1</span>Какой процесс</legend>
+          <div class="ref-options">
+            <label class="ref-option"><input type="radio" name={`process-${variant}`} value="Заявки клиентов" checked /><span>Заявки клиентов</span></label>
+            <label class="ref-option"><input type="radio" name={`process-${variant}`} value="Документы" /><span>Документы</span></label>
+            <label class="ref-option"><input type="radio" name={`process-${variant}`} value="Звонки" /><span>Звонки</span></label>
+            <label class="ref-option"><input type="radio" name={`process-${variant}`} value="Заказы и учёт" /><span>Заказы и учёт</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="ref-field">
+          <legend><span>2</span>Где живут данные</legend>
+          <div class="ref-options">
+            <label class="ref-option"><input type="checkbox" name="source" value="1С" checked /><span>1С</span></label>
+            <label class="ref-option"><input type="checkbox" name="source" value="CRM" /><span>CRM</span></label>
+            <label class="ref-option"><input type="checkbox" name="source" value="Excel" checked /><span>Excel</span></label>
+            <label class="ref-option"><input type="checkbox" name="source" value="Почта" /><span>Почта</span></label>
+            <label class="ref-option"><input type="checkbox" name="source" value="Мессенджеры" /><span>Мессенджеры</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="ref-field">
+          <legend><span>3</span>Что отнимает время</legend>
+          <div class="ref-options">
+            <label class="ref-option"><input type="radio" name={`problem-${variant}`} value="Повторный ввод данных" checked /><span>Повторный ввод</span></label>
+            <label class="ref-option"><input type="radio" name={`problem-${variant}`} value="Проверка по правилам" /><span>Проверка</span></label>
+            <label class="ref-option"><input type="radio" name={`problem-${variant}`} value="Распределение задач" /><span>Распределение</span></label>
+          </div>
+        </fieldset>
+      </form>
+      <article class="ref-protocol" aria-live="polite">
+        <header class="ref-protocol__top"><span>Протокол экспресс-аудита</span><span>Предварительно</span></header>
+        <h3 data-demo-title>Заявки клиентов</h3>
+        <dl>
+          <dt>Данные</dt><dd data-demo-sources>1С · Excel</dd>
+          <dt>Узкое место</dt><dd data-demo-problem>Повторный ввод данных</dd>
+          <dt>Возьмёт система</dt><dd>Сбор, проверку и передачу результата</dd>
+          <dt>Человеку</dt><dd>Исключения и решения вне правил</dd>
+        </dl>
+        <a class="ref-button ref-button--primary" href={url('/#contact')}>Обсудить на консультации <span aria-hidden="true">→</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-refined-demo]').forEach((root) => {
+    const update = () => {
+      const process = root.querySelector('input[type="radio"][name^="process-"]:checked');
+      const problem = root.querySelector('input[type="radio"][name^="problem-"]:checked');
+      const sources = [...root.querySelectorAll('input[name="source"]:checked')].map((input) => input.value);
+      const title = root.querySelector('[data-demo-title]');
+      const sourcesOut = root.querySelector('[data-demo-sources]');
+      const problemOut = root.querySelector('[data-demo-problem]');
+      if (title && process) title.textContent = process.value;
+      if (sourcesOut) sourcesOut.textContent = sources.length ? sources.join(' · ') : 'Источник нужно определить';
+      if (problemOut && problem) problemOut.textContent = problem.value;
+    };
+    root.addEventListener('input', update);
+    update();
+  });
+</script>
