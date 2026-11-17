@@ -12,7 +12,7 @@ const ru = {
     links: [
       { page: 'services', href: '/services/', label: 'Услуги' },
       { page: 'cases', href: '/cases/', label: 'Кейсы' },
-      { page: '', href: '/services/#demo', label: 'Демо' },
+      { page: 'demo', href: '/demo/', label: 'Демо' },
       { page: 'pricing', href: '/pricing/', label: 'Цены' },
       { page: 'about', href: '/about/', label: 'О нас' },
       { page: 'contact', href: '/contact/', label: 'Контакты' },
@@ -27,17 +27,26 @@ const ru = {
     cta: 'Обсудить проект',
     cta2: 'Наши услуги',
     benefits: ['Анализ процессов', 'Внедрение', 'Поддержка'],
-    strip: {
-      title: 'Что мы<br> делаем',
-      close: 'Закрыть',
-      items: [
-        { t: 'Автоматизация', d: 'Автоматизируем обработку заявок, согласования, отчётность и передачу данных между системами.' },
-        { t: 'ИИ-агенты', d: 'Разрабатываем агентов для работы с документами, базами знаний и типовыми обращениями клиентов.' },
-        { t: 'CRM и ERP', d: 'Соединяем CRM, ERP и другие системы через API, чтобы данные обновлялись автоматически.' },
-        { t: 'Документооборот', d: 'Автоматизируем подготовку, проверку и согласование документов.' },
-        { t: 'Веб-системы', d: 'Разрабатываем личные кабинеты, внутренние порталы и инструменты для команд.' },
-      ],
-    },
+  },
+  home: {
+    more: 'Подробнее',
+    services: { eyebrow: 'Услуги', title: 'Чем мы можем помочь', lead: 'Шесть направлений: от одной автоматизации до ИИ-ассистента внутри ваших систем.', more: 'Все услуги' },
+    cases: { eyebrow: 'Кейсы', title: 'Как процессы выглядят до и после', lead: 'Демонстрационные сценарии по усреднённым нормам времени.', more: 'Все кейсы', unit: 'мин' },
+    demo: { more: 'Как устроено демо' },
+    steps: { eyebrow: 'Как мы работаем', title: 'Четыре этапа сотрудничества', lead: 'Каждый этап — отдельный договор и оплата. После любого можно остановиться.', more: 'Этапы и цены' },
+    why: { eyebrow: 'Почему Anadept', title: 'Наш подход и принципы', more: 'О нас' },
+    faq: { title: 'Частые вопросы', more: 'Все вопросы' },
+    contact: { title: 'Обсудим вашу задачу?' },
+  },
+  demoPage: {
+    title: 'Разбор вашего процесса за минуту',
+    lead: 'Демо показывает, как мы смотрим на процесс на аудите: где теряется время, что может взять ИИ-агент и сколько часов можно вернуть.',
+    howTitle: 'Как это работает',
+    how: [
+      { t: 'Вы описываете процесс', d: 'Своими словами, без терминов: что происходит, где живут данные и какой объём.' },
+      { t: 'ИИ разбирает его', d: 'Находит узкие места, предлагает, что взять агенту, и оценивает, сколько часов в месяц можно вернуть.' },
+      { t: 'Мы уточняем на аудите', d: 'Демо даёт предварительную оценку. Точные цифры — после замера на ваших данных.' },
+    ],
   },
   services: {
     eyebrow: 'Услуги',
@@ -205,7 +214,7 @@ const en: Dict = {
     links: [
       { page: 'services', href: '/services/', label: 'Services' },
       { page: 'cases', href: '/cases/', label: 'Cases' },
-      { page: '', href: '/services/#demo', label: 'Demo' },
+      { page: 'demo', href: '/demo/', label: 'Demo' },
       { page: 'pricing', href: '/pricing/', label: 'Pricing' },
       { page: 'about', href: '/about/', label: 'About' },
       { page: 'contact', href: '/contact/', label: 'Contact' },
@@ -220,17 +229,26 @@ const en: Dict = {
     cta: 'Discuss a project',
     cta2: 'Our services',
     benefits: ['Process analysis', 'Implementation', 'Support'],
-    strip: {
-      title: 'What we<br> do',
-      close: 'Close',
-      items: [
-        { t: 'Automation', d: 'We automate request handling, approvals, reporting and data transfer between systems.' },
-        { t: 'AI agents', d: 'We build agents that work with documents, knowledge bases and routine customer requests.' },
-        { t: 'CRM & ERP', d: 'We connect CRM, ERP and other systems via API so data updates automatically.' },
-        { t: 'Document flow', d: 'We automate preparing, checking and approving documents.' },
-        { t: 'Web systems', d: 'We build client portals, internal tools and dashboards for teams.' },
-      ],
-    },
+  },
+  home: {
+    more: 'Learn more',
+    services: { eyebrow: 'Services', title: 'How we can help', lead: 'Six areas: from a single automation to an AI assistant inside your systems.', more: 'All services' },
+    cases: { eyebrow: 'Cases', title: 'Processes before and after', lead: 'Demo scenarios based on average time norms.', more: 'All cases', unit: 'min' },
+    demo: { more: 'How the demo works' },
+    steps: { eyebrow: 'How we work', title: 'Four stages of working together', lead: 'Each stage is a separate contract and payment. You can stop after any of them.', more: 'Stages and pricing' },
+    why: { eyebrow: 'Why Anadept', title: 'Our approach and principles', more: 'About us' },
+    faq: { title: 'Frequently asked questions', more: 'All questions' },
+    contact: { title: 'Shall we discuss your task?' },
+  },
+  demoPage: {
+    title: 'Your process, analysed in a minute',
+    lead: 'The demo shows how we look at a process during an audit: where time is lost, what an AI agent can take over and how many hours you can get back.',
+    howTitle: 'How it works',
+    how: [
+      { t: 'You describe the process', d: 'In your own words, no jargon: what happens, where the data lives and what the volume is.' },
+      { t: 'AI analyses it', d: 'It finds bottlenecks, suggests what an agent can take over and estimates the hours saved per month.' },
+      { t: 'We refine it in an audit', d: 'The demo gives a preliminary estimate. Exact numbers come after measuring on your data.' },
+    ],
   },
   services: {
     eyebrow: 'Services',

@@ -10,11 +10,17 @@ import How from '../components/How.astro';
 import Trust from '../components/Trust.astro';
 import Faq from '../components/Faq.astro';
 import Contact from '../components/Contact.astro';
+import HomeServices from '../components/HomeServices.astro';
+import HomeCases from '../components/HomeCases.astro';
+import HomeSteps from '../components/HomeSteps.astro';
+import HomeWhy from '../components/HomeWhy.astro';
+import DemoHow from '../components/DemoHow.astro';
+import { lurl } from '../lib/url';
 import { dict, type Lang } from '../i18n/content';
 
 // Все страницы сайта на двух языках: RU без префикса, EN под /en/
 export function getStaticPaths() {
-  const pages = ['', 'services', 'cases', 'pricing', 'about', 'contact'];
+  const pages = ['', 'services', 'cases', 'demo', 'pricing', 'about', 'contact'];
   return (['ru', 'en'] as const).flatMap((lang) =>
     pages.map((page) => ({
       params: { slug: [lang === 'en' ? 'en' : '', page].filter(Boolean).join('/') || undefined },
@@ -27,14 +33,33 @@ const { lang, page } = Astro.props as { lang: Lang; page: string };
 const t = dict[lang];
 ---
 <Page lang={lang} page={page}>
-  {page === '' && <Hero t={t} lang={lang} />}
+  {/* Главная: короткие версии разделов, «подробнее» ведёт на отдельные страницы */}
+  {page === '' && <Hero slot="top" t={t} lang={lang} />}
+  {page === '' && (
+    <>
+      <HomeServices t={t} lang={lang} />
+      <HomeCases t={t} lang={lang} />
+      <Audit t={t} lang={lang} more={{ href: lurl(lang, '/demo/'), label: t.home.demo.more }} />
+      <HomeSteps t={t} lang={lang} />
+      <HomeWhy t={t} lang={lang} />
+      <Faq t={t} limit={4} title={t.home.faq.title} more={{ href: lurl(lang, '/about/#faq'), label: t.home.faq.more }} />
+      <Contact t={t} title={t.home.contact.title} />
+    </>
+  )}
 
   {page === 'services' && <PageTop slot="top" eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />}
   {page === 'services' && (
     <>
       <Services t={t} lang={lang} />
       <WorkSteps t={t} />
-      <Audit t={t} lang={lang} />
+    </>
+  )}
+
+  {page === 'demo' && <PageTop slot="top" eyebrow={t.audit.eyebrow} title={t.demoPage.title} lead={t.demoPage.lead} />}
+  {page === 'demo' && (
+    <>
+      <Audit t={t} lang={lang} bare />
+      <DemoHow t={t} />
     </>
   )}
 

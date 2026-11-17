@@ -1,6 +1,6 @@
 ---
 import type { Dict } from '../i18n/content';
-const { t } = Astro.props as { t: Dict };
+const { t, title } = Astro.props as { t: Dict; title?: string };
 const c = t.contact;
 ---
 <section class="contact" id="contact">
@@ -9,7 +9,7 @@ const c = t.contact;
       <div class="glow" aria-hidden="true"></div>
       <div class="c-txt reveal">
         <span class="eyebrow">{c.eyebrow}</span>
-        <h2>{c.title}</h2>
+        <h2>{title ?? c.title}</h2>
         <p class="alt">{c.alt}: <a href="https://t.me/anadept" data-cursor="Telegram">@anadept</a> · <a href="mailto:hello@anadept.by" data-cursor="Email">hello@anadept.by</a></p>
       </div>
       <form class="form reveal" data-ok={c.ok}>

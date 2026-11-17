@@ -1,16 +1,17 @@
 ---
 import type { Dict } from '../i18n/content';
-const { t } = Astro.props as { t: Dict };
+const { t, limit, title, more } = Astro.props as { t: Dict; limit?: number; title?: string; more?: { href: string; label: string } };
 const f = t.faq;
 ---
 <section class="faq" id="faq">
   <div class="wrap faq-grid">
     <div class="sec-head reveal">
       <span class="eyebrow">{f.eyebrow}</span>
-      <h2>{f.title}</h2>
+      <h2>{title ?? f.title}</h2>
+      {more && <a class="more-link" href={more.href}>{more.label}<span class="arr" aria-hidden="true">→</span></a>}
     </div>
     <div class="list">
-      {f.items.map((it) => (
+      {f.items.slice(0, limit ?? f.items.length).map((it) => (
         <details class="reveal">
           <summary><span>{it.q}</span><i></i></summary>
           <div class="a"><p>{it.a}</p></div>
@@ -22,6 +23,8 @@ const f = t.faq;
 
 <style>
   .faq-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(32px, 5vw, 80px); }
+  .faq-grid .sec-head { align-content: start; }
+  .sec-head .more-link { margin-top: 10px; }
   .list { border-top: 1px solid var(--line-2); }
   details { border-bottom: 1px solid var(--line-2); }
   summary {

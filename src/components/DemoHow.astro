@@ -1,0 +1,28 @@
+---
+import type { Dict } from '../i18n/content';
+const { t } = Astro.props as { t: Dict };
+const d = t.demoPage;
+---
+<section class="demo-how">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>{d.howTitle}</h2></div>
+    <ol class="cards">
+      {d.how.map((it, i) => (
+        <li class="reveal" style={`transition-delay:${i * 80}ms`}>
+          <span class="n">0{i + 1}</span>
+          <h3>{it.t}</h3>
+          <p>{it.d}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .cards li { display: grid; align-content: start; gap: 12px; padding: 30px 28px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
+  .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .cards h3 { font-size: clamp(20px, 1.8vw, 24px); }
+  .cards p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } }
+</style>
