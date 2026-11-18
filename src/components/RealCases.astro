@@ -1,0 +1,21 @@
+---
+import type { Lang } from '../i18n/content';
+import { cases, caseLabels } from '../i18n/cases';
+import CaseCard from './CaseCard.astro';
+const { lang } = Astro.props as { lang: Lang };
+---
+<section class="real" id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">{caseLabels[lang].realTitle}</span>
+    </div>
+    <div class="list">
+      {cases[lang].map((c, i) => <CaseCard c={c} lang={lang} i={i} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .real .sec-head { margin-bottom: 24px; }
+  .list { display: grid; gap: 20px; }
+</style>

@@ -4,12 +4,12 @@ import Header from '../components/Header.astro';
 import { dict, type Lang } from '../i18n/content';
 import { url, lurl } from '../lib/url';
 
-interface Props { lang: Lang; page: string }
-const { lang, page } = Astro.props;
+interface Props { lang: Lang; page: string; title?: string }
+const { lang, page, title: pageTitle } = Astro.props;
 const t = dict[lang];
 const path = page ? `/${page}/` : '/';
 const navItem = page ? t.nav.links.find((l) => l.page === page) : undefined;
-const title = navItem ? `${navItem.label} — Anadept` : t.meta.title;
+const title = pageTitle ? `${pageTitle} — Anadept` : navItem ? `${navItem.label} — Anadept` : t.meta.title;
 ---
 <Base lang={lang} t={t} title={title} path={path}>
   <Header t={t} lang={lang} page={page} path={path} />

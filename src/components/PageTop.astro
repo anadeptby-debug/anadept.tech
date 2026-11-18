@@ -1,22 +1,33 @@
 ---
-interface Props { eyebrow: string; title: string; lead?: string }
-const { eyebrow, title, lead } = Astro.props;
+interface Props { eyebrow: string; title: string; lead?: string; meta?: string[]; back?: { href: string; label: string } }
+const { eyebrow, title, lead, meta, back } = Astro.props;
 ---
 <section class="ptop">
+  {back && <div class="back-row"><a class="back" href={back.href}><span aria-hidden="true">←</span>{back.label}</a></div>}
   <div class="inner">
     <p class="eyebrow">{eyebrow}</p>
     <h1>{title}</h1>
     {lead && <p class="description">{lead}</p>}
+    {meta && <ul class="meta">{meta.map((m) => <li>{m}</li>)}</ul>}
   </div>
 </section>
 
 <style>
   .ptop { padding: 56px 24px 104px; text-align: center; }
+  .back-row { max-width: var(--wrap); margin: -24px auto 40px; padding: 0 calc(var(--gutter) - 24px); text-align: left; }
+  .back { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--on-dark-line); color: var(--on-dark-muted); font-size: 14px; transition: color .2s, border-color .2s; }
+  .back:hover { color: var(--on-dark); border-color: #c7cad3; }
+  .back span { color: var(--peach); transition: transform .3s var(--ease); }
+  .back:hover span { transform: translateX(-3px); }
   .inner { max-width: 960px; margin-inline: auto; }
   .eyebrow { justify-content: center; color: #c7cad3; }
   h1 { margin-top: 20px; font-size: clamp(42px, 6vw, 80px); line-height: 1; letter-spacing: -.035em; text-wrap: balance; }
   .description { max-width: 640px; margin: 20px auto 0; font-size: 18px; line-height: 28px; letter-spacing: .02em; color: var(--on-dark-muted); text-wrap: balance; }
+  .meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0; margin: 28px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--on-dark); }
+  .meta li + li::before { content: '·'; margin: 0 12px; color: var(--peach); }
   @media (max-width: 700px) {
+    .meta { font-size: 13px; }
+    .back-row { margin: -16px 0 28px; padding: 0; }
     .ptop { padding: 40px 18px 64px; }
     h1 { font-size: clamp(32px, 9vw, 44px); line-height: 1.05; }
     .description { font-size: 15px; line-height: 24px; }

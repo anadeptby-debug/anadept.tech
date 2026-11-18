@@ -5,12 +5,13 @@ const { t, lang, page, path } = Astro.props as { t: Dict; lang: Lang; page: stri
 const home = lurl(lang, '/');
 const other = lurl(lang === 'ru' ? 'en' : 'ru', path);
 const contact = lurl(lang, '/contact/');
+const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает «Кейсы»
 ---
 <header class="hdr">
   <div class="wrap hdr-in">
     <a href={home} class="logo" aria-label="Anadept"><img src={url('/brand/logo-white-center.png')} alt="Anadept" width="122" height="25" /></a>
     <nav class="nav">
-      {t.nav.links.map((l) => <a href={lurl(lang, l.href)} class:list={{ cur: l.page && l.page === page }} aria-current={l.page && l.page === page ? 'page' : undefined}>{l.label}</a>)}
+      {t.nav.links.map((l) => <a href={lurl(lang, l.href)} class:list={{ cur: l.page && l.page === section }} aria-current={l.page && l.page === page ? 'page' : undefined}>{l.label}</a>)}
     </nav>
     <div class="hdr-r">
       <a href={other} class="lang">{t.nav.other.label}</a>

@@ -31,7 +31,7 @@ const ru = {
   home: {
     more: 'Подробнее',
     services: { eyebrow: 'Услуги', title: 'Чем мы можем помочь', lead: 'Шесть направлений: от одной автоматизации до ИИ-ассистента внутри ваших систем.', more: 'Все услуги' },
-    cases: { eyebrow: 'Кейсы', title: 'Как процессы выглядят до и после', lead: 'Демонстрационные сценарии по усреднённым нормам времени.', more: 'Все кейсы', unit: 'мин' },
+    cases: { eyebrow: 'Кейсы', title: 'Как процессы выглядят до и после', lead: 'Реальные проекты с цифрами до и после. Каждый можно раскрыть или прочитать целиком.', more: 'Все кейсы', unit: 'мин' },
     demo: { more: 'Как устроено демо' },
     steps: { eyebrow: 'Как мы работаем', title: 'Четыре этапа сотрудничества', lead: 'Каждый этап — отдельный договор и оплата. После любого можно остановиться.', more: 'Этапы и цены' },
     why: { eyebrow: 'Почему Anadept', title: 'Наш подход и принципы', more: 'О нас' },
@@ -69,7 +69,7 @@ const ru = {
     },
   },
   solutions: {
-    eyebrow: 'Кейсы',
+    eyebrow: 'Типовые сценарии',
     title: 'Как процессы выглядят до и после.',
     before: 'До',
     after: 'После',
@@ -233,7 +233,7 @@ const en: Dict = {
   home: {
     more: 'Learn more',
     services: { eyebrow: 'Services', title: 'How we can help', lead: 'Six areas: from a single automation to an AI assistant inside your systems.', more: 'All services' },
-    cases: { eyebrow: 'Cases', title: 'Processes before and after', lead: 'Demo scenarios based on average time norms.', more: 'All cases', unit: 'min' },
+    cases: { eyebrow: 'Cases', title: 'Processes before and after', lead: 'Real projects with before-and-after numbers. Expand one or read it in full.', more: 'All cases', unit: 'min' },
     demo: { more: 'How the demo works' },
     steps: { eyebrow: 'How we work', title: 'Four stages of working together', lead: 'Each stage is a separate contract and payment. You can stop after any of them.', more: 'Stages and pricing' },
     why: { eyebrow: 'Why Anadept', title: 'Our approach and principles', more: 'About us' },
@@ -271,7 +271,7 @@ const en: Dict = {
     },
   },
   solutions: {
-    eyebrow: 'Cases',
+    eyebrow: 'Typical scenarios',
     title: 'What processes look like before and after.',
     before: 'Before',
     after: 'After',
