@@ -1,0 +1,316 @@
+---
+// Полная страница кейса: цифры → задача → решение → как работает → было/стало → результаты → CTA
+import type { Lang } from '../i18n/content';
+import { cases, caseLabels, type CaseStudy } from '../i18n/cases';
+import { lurl } from '../lib/url';
+const { c, lang } = Astro.props as { c: CaseStudy; lang: Lang };
+const L = caseLabels[lang];
+const list = cases[lang];
+const next = list[(list.findIndex((x) => x.slug === c.slug) + 1) % list.length];
+const pct = (v: number, total: number) => Math.round((v / total) * 100);
+---
+<article class="cs">
+  <section class="figs">
+    <div class="wrap">
+      <ul class="fig-row reveal">
+        {c.figures.map((f) => <li><b>{f.v}</b><span>{f.l}</span></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap split">
+      <h2 class="reveal">{c.task.title}</h2>
+      <div class="body reveal">
+        {c.task.intro && <p class="intro">{c.task.intro}</p>}
+        <ul class="pains">
+          {c.task.items.map((it) => <li>{it.b && <b>{it.b} </b>}{it.t}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {c.analysis && (
+    <section class="block">
+      <div class="wrap split">
+        <h2 class="reveal">{c.analysis.title}</h2>
+        <div class="body reveal">
+          <p class="intro">{c.analysis.intro}</p>
+          <ul class="bars">
+            {c.analysis.rows.map((r, i) => (
+              <li class={i === 0 ? 'ok' : ''}>
+                <div class="bar-top"><span>{r.l}</span><b>{r.v}</b></div>
+                <div class="track"><i style={`--w:${pct(r.v, c.analysis!.total)}%`}></i></div>
+              </li>
+            ))}
+          </ul>
+          <p class="outro">{c.analysis.outro}</p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {c.done && (
+    <section class="block">
+      <div class="wrap">
+        <h2 class="reveal">{c.done.title}</h2>
+        <ol class="done">
+          {c.done.items.map((it, i) => (
+            <li class="reveal" style={`transition-delay:${(i % 2) * 80}ms`}>
+              <span class="n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{it.b}</h3>
+              <p>{it.t}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  {c.idea && (
+    <section class="block">
+      <div class="wrap idea">
+        <div class="reveal">
+          <h2>{c.idea.title}</h2>
+          <p class="intro">{c.idea.text}</p>
+          <p class="closing">{c.idea.closing}</p>
+        </div>
+        <figure class="ex reveal">
+          <figcaption>
+            <span class="ex-k">{c.idea.example.title}</span>
+            <span class="ex-op">{c.idea.example.op} · {c.idea.example.sheet}</span>
+            <b class="ex-total">{c.idea.example.total}</b>
+          </figcaption>
+          <div class="split-bar" aria-hidden="true">
+            {c.idea.example.parts.map((p) => <i style={`--w:${p.share}%`}></i>)}
+          </div>
+          <ul class="ex-parts">
+            {c.idea.example.parts.map((p) => (
+              <li><span class="sw"></span><span class="who">{p.n}</span><span class="q">{p.q}</span><b>{p.sum}</b></li>
+            ))}
+          </ul>
+          <p class="ex-res">{c.idea.example.result}</p>
+        </figure>
+      </div>
+    </section>
+  )}
+
+  <section class="block">
+    <div class="wrap">
+      <div class="flow reveal">
+        <h2>{c.flow.title}</h2>
+        <ol>
+          {c.flow.items.map((it, i) => (
+            <li><span class="node">{i + 1}</span><p>{it.b && <b>{it.b} </b>}{it.t}</p></li>
+          ))}
+        </ol>
+        {c.flow.after && <p class="flow-after">{c.flow.after}</p>}
+      </div>
+    </div>
+  </section>
+
+  {(c.guards || c.checks) && (
+    <section class="block">
+      <div class="wrap split">
+        <h2 class="reveal">{(c.guards ?? c.checks)!.title}</h2>
+        <ul class="checks reveal">
+          {(c.guards ?? c.checks)!.items.map((t) => <li>{t}</li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="block">
+    <div class="wrap">
+      <h2 class="reveal">{c.compare.title}</h2>
+      <div class="cmp reveal" role="table">
+        <div class="cmp-row head" role="row">{c.compare.cols.map((h) => <span role="columnheader">{h}</span>)}</div>
+        {c.compare.rows.map(([k, a, b]) => (
+          <div class="cmp-row" role="row">
+            <span class="k" role="cell">{k}</span>
+            <span class="a" role="cell"><em>{c.compare.cols[1]}</em>{a}</span>
+            <span class="b" role="cell"><em>{c.compare.cols[2]}</em>{b}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap split">
+      <h2 class="reveal">{c.results.title}</h2>
+      <div class="reveal">
+        <ul class="results">
+          {c.results.items.map((it) => <li><b>{it.b}</b> {it.t}</li>)}
+        </ul>
+        <p class="note">{L.note}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class:list={["wrap fit-grid", { solo: !c.tech }]}>
+      <div class="fit reveal">
+        <h3>{c.fit.title}</h3>
+        <p>{c.fit.text}</p>
+      </div>
+      {c.tech && (
+        <div class="tech reveal">
+          <h3>{c.tech.title}</h3>
+          <p>{c.tech.text}</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta reveal">
+        <h2>{L.cta.title}</h2>
+        <a class="btn" href={lurl(lang, '/contact/')}>{L.cta.btn}<span class="arr">→</span></a>
+      </div>
+      <nav class="after-nav">
+        <a class="more-link" href={lurl(lang, '/cases/')}><span class="arr back" aria-hidden="true">←</span>{L.allCases}</a>
+        {next.slug !== c.slug && (
+          <a class="next" href={lurl(lang, `/cases/${next.slug}/`)}>
+            <span>{L.next}</span>
+            <b>{next.card.title}<span class="arr" aria-hidden="true">→</span></b>
+          </a>
+        )}
+      </nav>
+    </div>
+  </section>
+</article>
+
+<style>
+  .cs h2 { font-size: clamp(28px, 3.2vw, 42px); }
+  .block { padding: clamp(36px, 4.5vw, 64px) 0; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr); gap: clamp(24px, 5vw, 80px); align-items: start; }
+  .intro { font-size: clamp(17px, 1.4vw, 19px); line-height: 1.6; color: var(--ink-2); }
+  .done + *, h2 + .done, h2 + .cmp { margin-top: 32px; }
+
+  /* Ключевые цифры */
+  .figs { padding-top: clamp(28px, 3vw, 40px); padding-bottom: 8px; }
+  .fig-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+  .fig-row li { display: grid; gap: 6px; padding: 26px 24px 24px 0; }
+  .fig-row li + li { padding-left: 24px; border-left: 1px solid var(--line); }
+  .fig-row b { font-family: var(--font-head); font-size: clamp(30px, 3.4vw, 46px); font-weight: 500; letter-spacing: -.045em; line-height: 1; color: var(--accent); white-space: nowrap; }
+  .fig-row span { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+  /* Задача */
+  .pains { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .pains li { padding: 18px 0 18px 30px; border-bottom: 1px solid var(--line); position: relative; color: var(--muted); line-height: 1.6; }
+  .pains li::before { content: ''; position: absolute; left: 4px; top: 29px; width: 10px; height: 2px; background: var(--accent); }
+  .pains b { color: var(--ink); font-weight: 600; }
+
+  /* Аудит: полосы */
+  .bars { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 18px; }
+  .bar-top { display: flex; justify-content: space-between; gap: 16px; font-size: 15px; color: var(--ink-2); }
+  .bar-top b { font-family: var(--font-head); font-weight: 500; font-size: 20px; letter-spacing: -.03em; }
+  .track { margin-top: 8px; height: 10px; border-radius: 999px; background: var(--milk-2); overflow: hidden; }
+  .track i { display: block; height: 100%; width: var(--w); border-radius: 999px; background: var(--accent); }
+  .bars .ok .track i { background: var(--dark); }
+  .outro { margin-top: 24px; color: var(--muted); line-height: 1.65; }
+
+  /* Что сделали */
+  .done { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .done li { display: grid; align-content: start; gap: 12px; padding: 30px 30px 32px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+  .done .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .done h3 { font-size: clamp(20px, 1.8vw, 24px); }
+  .done p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+  /* Идея + пример деления денег */
+  .idea { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+  .idea h2 { margin-bottom: 20px; }
+  .closing { margin-top: 18px; font-family: var(--font-head); font-size: 20px; font-weight: 500; letter-spacing: -.02em; }
+  .ex { margin: 0; padding: clamp(24px, 3vw, 36px); border-radius: var(--radius-l); background: var(--paper); border: 1px solid var(--line); }
+  .ex figcaption { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: end; }
+  .ex-k { grid-column: 1 / -1; font-size: 13px; font-weight: 500; letter-spacing: .055em; text-transform: uppercase; color: var(--muted); }
+  .ex-op { font-size: 16px; color: var(--ink-2); }
+  .ex-total { font-family: var(--font-head); font-size: 34px; font-weight: 500; letter-spacing: -.04em; line-height: 1; }
+  .split-bar { display: flex; gap: 4px; height: 44px; margin: 22px 0 18px; }
+  .split-bar i { display: block; width: var(--w); border-radius: 12px; }
+  .split-bar i:nth-child(1), .ex-parts li:nth-child(1) .sw { background: var(--dark); }
+  .split-bar i:nth-child(2), .ex-parts li:nth-child(2) .sw { background: var(--peach); }
+  .split-bar i:nth-child(3), .ex-parts li:nth-child(3) .sw { background: var(--accent); }
+  .ex-parts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-2); }
+  .ex-parts li { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .sw { width: 12px; height: 12px; border-radius: 4px; }
+  .q { color: var(--muted); font-size: 14px; }
+  .ex-parts b { min-width: 64px; text-align: right; font-family: var(--font-head); font-weight: 500; font-size: 18px; }
+  .ex-res { margin-top: 16px; font-weight: 600; color: var(--accent); }
+
+  /* Как работает — тёмный блок */
+  .flow { position: relative; overflow: hidden; padding: clamp(28px, 4vw, 56px); border-radius: 32px; background: var(--dark); color: var(--on-dark); }
+  .flow::before { content: ''; position: absolute; right: -140px; top: -160px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--orange) 26%, transparent), transparent 70%); pointer-events: none; }
+  .flow ol { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 0; max-width: 820px; }
+  .flow li { position: relative; display: grid; grid-template-columns: 48px 1fr; gap: 20px; align-items: start; padding-bottom: 26px; }
+  .flow li:not(:last-child)::after { content: ''; position: absolute; left: 23px; top: 48px; bottom: 0; width: 1.5px; background: var(--on-dark-line); }
+  .node { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--peach); font-size: 15px; }
+  .flow li:last-child .node { background: var(--peach); color: var(--dark); }
+  .flow p { padding-top: 11px; color: var(--on-dark-muted); line-height: 1.6; }
+  .flow p b { color: var(--on-dark); font-weight: 600; }
+  .flow-after { max-width: 820px; margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--on-dark-line); color: var(--on-dark-muted); font-size: 15px; }
+
+  /* Чек-лист */
+  .checks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .checks li { position: relative; padding: 18px 20px 18px 52px; border-radius: var(--radius-s); background: var(--paper); border: 1px solid var(--line); font-size: 15px; line-height: 1.55; }
+  .checks li::before { content: '✓'; position: absolute; left: 18px; top: 16px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 700; }
+
+  /* Было → стало */
+  .cmp { border-top: 1px solid var(--line-2); }
+  .cmp-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .cmp-row.head { padding: 14px 0; font-size: 13px; font-weight: 500; letter-spacing: .055em; text-transform: uppercase; color: var(--muted); }
+  .cmp-row.head span:last-child { color: var(--accent); }
+  .cmp .k { font-weight: 600; }
+  .cmp .a { color: var(--muted); }
+  .cmp .b { color: var(--ink); }
+  .cmp .b::before { content: '→ '; color: var(--accent); }
+  .cmp em { display: none; }
+
+  /* Результаты */
+  .results { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .results li { padding: 18px 0 18px 36px; border-bottom: 1px solid var(--line); position: relative; color: var(--muted); line-height: 1.6; }
+  .results li::before { content: '✓'; position: absolute; left: 0; top: 18px; color: var(--accent); font-weight: 700; }
+  .results b { color: var(--ink); font-weight: 600; }
+  .note { margin-top: 18px; font-size: 13px; color: var(--faint); }
+
+  /* Кому подойдёт / технологии */
+  .fit-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+  .fit-grid.solo { grid-template-columns: 1fr; }
+  .fit, .tech { display: grid; align-content: start; gap: 12px; padding: 32px; border-radius: var(--radius); }
+  .fit { background: var(--accent-soft); }
+  .tech { background: var(--paper); border: 1px solid var(--line); }
+  .fit h3, .tech h3 { font-size: 22px; }
+  .fit p { line-height: 1.65; color: var(--ink-2); }
+  .tech p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+  /* CTA и навигация */
+  .cta { display: flex; justify-content: space-between; align-items: center; gap: 24px 48px; flex-wrap: wrap; padding: clamp(28px, 4vw, 56px); border-radius: 32px; background: var(--dark); color: var(--on-dark); }
+  .cta h2 { max-width: 640px; font-size: clamp(24px, 2.6vw, 34px); line-height: 1.15; }
+  .after-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 28px; }
+  .arr.back { color: var(--accent); }
+  .next { display: grid; gap: 2px; text-align: right; }
+  .next span { font-size: 13px; color: var(--muted); }
+  .next b { font-family: var(--font-head); font-weight: 500; font-size: 20px; letter-spacing: -.02em; }
+  .next .arr { margin-left: 8px; color: var(--accent); display: inline-block; transition: transform .3s var(--ease); }
+  .next:hover .arr { transform: translateX(4px); }
+
+  @media (max-width: 900px) {
+    .split, .idea, .fit-grid { grid-template-columns: 1fr; }
+    .fig-row { grid-template-columns: 1fr 1fr; }
+    .fig-row li + li:nth-child(odd) { padding-left: 0; border-left: 0; }
+    .fig-row li:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 680px) {
+    .done, .checks { grid-template-columns: 1fr; }
+    .cmp-row { grid-template-columns: 1fr; gap: 6px; }
+    .cmp-row.head { display: none; }
+    .cmp em { display: inline; font-style: normal; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-right: 8px; color: var(--faint); }
+    .cmp .b::before { content: none; }
+    .cmp .b em { color: var(--accent); }
+    .next { text-align: left; }
+    .fig-row li { padding-right: 12px; }
+    .fig-row li + li:nth-child(even) { padding-left: 14px; }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import type { Dict, Lang } from '../i18n/content';
+import { lurl } from '../lib/url';
+import HomeHead from './HomeHead.astro';
+const { t, lang } = Astro.props as { t: Dict; lang: Lang };
+const h = t.home.why;
+---
+<section class="h-why" id="why">
+  <div class="wrap">
+    <HomeHead eyebrow={h.eyebrow} title={h.title} lead={t.trust.lead} href={lurl(lang, '/about/')} more={h.more} />
+    <div class="cards">
+      {t.trust.items.map((it, i) => (
+        <article class="card-w reveal" style={`transition-delay:${i * 80}ms`}>
+          <span class="n">0{i + 1}</span>
+          <h3>{it.t}</h3>
+          <p>{it.d}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card-w { display: grid; align-content: start; gap: 12px; padding: 30px 28px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
+  .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .card-w h3 { font-size: clamp(20px, 1.8vw, 24px); }
+  .card-w p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } }
+</style>

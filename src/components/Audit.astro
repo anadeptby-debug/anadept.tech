@@ -1,7 +1,7 @@
 ---
 import type { Dict, Lang } from '../i18n/content';
 import { url, lurl } from '../lib/url';
-const { t, lang } = Astro.props as { t: Dict; lang: Lang };
+const { t, lang, more, bare } = Astro.props as { t: Dict; lang: Lang; more?: { href: string; label: string }; bare?: boolean };
 const a = t.audit;
 const steps = [
   { name: 'process', ...a.q.process, rows: 3 },
@@ -13,11 +13,16 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
 ---
 <section class="audit" id="demo">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">{a.eyebrow}</span>
-      <h2 set:html={a.title} />
-      <p class="lead">{a.lead}</p>
-    </div>
+    {!bare && (
+      <div class="a-head reveal">
+        <div class="sec-head">
+          <span class="eyebrow">{a.eyebrow}</span>
+          <h2 set:html={a.title} />
+          <p class="lead">{a.lead}</p>
+        </div>
+        {more && <a class="more-link" href={more.href}>{more.label}<span class="arr" aria-hidden="true">→</span></a>}
+      </div>
+    )}
 
     <div class="grid" data-audit={JSON.stringify({ api, lang, empty: a.empty, errors: a.errors })}>
       <form class="qs reveal" novalidate>
@@ -140,6 +145,9 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
 </script>
 
 <style>
+  .a-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 40px; flex-wrap: wrap; margin-bottom: clamp(36px, 4.5vw, 56px); }
+  .a-head .sec-head { margin: 0; }
+  @media (max-width: 700px) { .a-head { flex-direction: column; align-items: flex-start; } }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
   fieldset { border: 0; border-top: 1px solid var(--line-2); margin: 0; padding: 24px 0 28px; display: grid; gap: 12px; }
   legend { float: left; width: 100%; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 18px; padding: 0; margin-bottom: 4px; }

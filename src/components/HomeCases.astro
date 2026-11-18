@@ -1,0 +1,21 @@
+---
+import type { Dict, Lang } from '../i18n/content';
+import { cases } from '../i18n/cases';
+import { lurl } from '../lib/url';
+import HomeHead from './HomeHead.astro';
+import CaseCard from './CaseCard.astro';
+const { t, lang } = Astro.props as { t: Dict; lang: Lang };
+const h = t.home.cases;
+---
+<section class="h-cases" id="cases">
+  <div class="wrap">
+    <HomeHead eyebrow={h.eyebrow} title={h.title} lead={h.lead} href={lurl(lang, '/cases/')} more={h.more} />
+    <div class="list">
+      {cases[lang].map((c, i) => <CaseCard c={c} lang={lang} i={i} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .list { display: grid; gap: 20px; }
+</style>

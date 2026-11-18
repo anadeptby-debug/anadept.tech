@@ -1,0 +1,19 @@
+---
+// Шапка раздела на главной: заголовок слева, ссылка «подробнее» на отдельную страницу справа
+interface Props { eyebrow?: string; title: string; lead?: string; href?: string; more?: string }
+const { eyebrow, title, lead, href, more } = Astro.props;
+---
+<div class="hh reveal">
+  <div class="sec-head">
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h2>{title}</h2>
+    {lead && <p class="lead">{lead}</p>}
+  </div>
+  {href && more && <a class="more-link" href={href}>{more}<span class="arr" aria-hidden="true">→</span></a>}
+</div>
+
+<style>
+  .hh { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 40px; flex-wrap: wrap; margin-bottom: clamp(36px, 4.5vw, 56px); }
+  .hh .sec-head { margin: 0; }
+  @media (max-width: 700px) { .hh { flex-direction: column; align-items: flex-start; } }
+</style>
