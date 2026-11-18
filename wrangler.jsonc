@@ -12,8 +12,11 @@
   },
   // Запускать воркер рядом с серверами Google, а не рядом с посетителем (важно для РБ/РФ)
   "placement": { "mode": "smart" },
+  // Запасной ИИ от Cloudflare: работает без ключей, если Gemini недоступен
+  "ai": { "binding": "AI" },
   "vars": {
-    "GEMINI_MODEL": "gemini-2.5-flash"
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "CF_AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
   }
   // Ключ задаётся секретом GEMINI_API_KEY в панели Cloudflare (Settings → Variables and Secrets)
 }

@@ -1,5 +1,5 @@
 // Инструкции для ИИ в конструкторе экспресс-аудита.
-// Правьте текст здесь — после правки нужен повторный деплой воркера (npm run deploy в папке worker).
+// Правьте текст здесь. На сайт попадёт после пуша в main (Cloudflare пересоберёт воркер).
 
 export const SYSTEM_PROMPT = `
 Ты — инженер Anadept, компании, которая автоматизирует бизнес-процессы и внедряет ИИ
@@ -17,36 +17,44 @@ export const SYSTEM_PROMPT = `
    за небольшую подписку — так и скажи в поле format.
 4. Не обещай 100% автоматизации: сомнительные случаи ИИ передаёт человеку.
    Цены, скидки и решения берутся из правил и данных клиента, а не придумываются моделью.
-5. Оценку часов делай консервативно: объём в день × минуты на одну единицу × доля,
-   которую реально заберёт агент × 21 рабочий день. Если объём не указан или непонятен,
-   прими разумное допущение и укажи его в assumptions.
+5. Часы не считай сам — дай исходные цифры, итог посчитает система:
+   per_day — сколько единиц (заявок, документов, звонков) в рабочий день;
+   minutes — сколько минут человек тратит на одну единицу сейчас;
+   share — какую долю этой работы реально заберёт агент (от 0.3 до 0.8, консервативно).
+   Если объём не указан или непонятен, прими разумное допущение и укажи его в assumptions.
 6. Если ответы не про бизнес-процесс (бессмыслица, шутка, оскорбления, просьба о чём-то другом),
-   поставь off_topic = true, hours = 0, а в остальных полях вежливо попроси описать реальный процесс.
+   поставь off_topic = true, per_day = 0, а в остальных полях вежливо попроси описать реальный процесс.
 7. Язык ответа — тот, что указан в запросе (ru или en). Без markdown, без эмодзи.
 
 Поля ответа:
-- hours: целое число часов в месяц, которые вернёт автоматизация.
-- bottlenecks: 2–4 узких места, каждое — короткая фраза до 70 символов.
-- agent: что конкретно возьмёт на себя ИИ-агент, 1–2 предложения до 220 символов.
+- per_day: число единиц работы в рабочий день.
+- minutes: минут на одну единицу сейчас.
+- share: доля работы, которую заберёт агент, от 0 до 1.
+- bottlenecks: 3 узких места. Каждое — законченная фраза с заглавной буквы, до 70 символов,
+  с деталями клиента: кто, что и где делает вручную.
+  Хорошо: «Менеджер вручную ищет заказ в amoCRM на каждый звонок». Плохо: «поиск заказа».
+- agent: что конкретно возьмёт на себя ИИ-агент и что останется человеку, 1–2 предложения до 220 символов.
 - format: рекомендация, с чего начать (аудит, пилот на одном процессе или готовый сервис)
   и почему, 1 предложение до 160 символов.
 - assumptions: допущения, на которых построена оценка, 1 предложение до 140 символов.
 - off_topic: true/false.
 `.trim();
 
-// Схема ответа: Gemini вернёт строго такой JSON
+// Схема ответа для Gemini: вернёт строго такой JSON
 export const RESPONSE_SCHEMA = {
   type: 'OBJECT',
   properties: {
-    hours: { type: 'INTEGER' },
+    per_day: { type: 'NUMBER' },
+    minutes: { type: 'NUMBER' },
+    share: { type: 'NUMBER' },
     bottlenecks: { type: 'ARRAY', items: { type: 'STRING' } },
     agent: { type: 'STRING' },
     format: { type: 'STRING' },
     assumptions: { type: 'STRING' },
     off_topic: { type: 'BOOLEAN' },
   },
-  required: ['hours', 'bottlenecks', 'agent', 'format', 'assumptions', 'off_topic'],
-  propertyOrdering: ['off_topic', 'bottlenecks', 'agent', 'hours', 'assumptions', 'format'],
+  required: ['per_day', 'minutes', 'share', 'bottlenecks', 'agent', 'format', 'assumptions', 'off_topic'],
+  propertyOrdering: ['off_topic', 'bottlenecks', 'agent', 'per_day', 'minutes', 'share', 'assumptions', 'format'],
 };
 
 export const userMessage = ({ lang, process, sources, volume }) => `
@@ -64,3 +72,19 @@ ${sources || '—'}
 ${volume || '—'}
 </volume>
 `.trim();
+
+// Та же схема в стандартном JSON Schema — для Cloudflare Workers AI
+export const JSON_SCHEMA = {
+  type: 'object',
+  properties: {
+    off_topic: { type: 'boolean' },
+    bottlenecks: { type: 'array', items: { type: 'string' } },
+    agent: { type: 'string' },
+    per_day: { type: 'number' },
+    minutes: { type: 'number' },
+    share: { type: 'number' },
+    assumptions: { type: 'string' },
+    format: { type: 'string' },
+  },
+  required: ['per_day', 'minutes', 'share', 'bottlenecks', 'agent', 'format', 'assumptions', 'off_topic'],
+};

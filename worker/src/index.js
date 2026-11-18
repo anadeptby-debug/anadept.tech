@@ -1,6 +1,7 @@
-// Cloudflare Worker: отдаёт статический сайт (dist) и отвечает конструктору на /api/audit через Gemini.
-// Ключ Gemini хранится только здесь (секрет GEMINI_API_KEY), в браузер он не попадает.
-import { SYSTEM_PROMPT, RESPONSE_SCHEMA, userMessage } from './prompt.js';
+// Cloudflare Worker: отдаёт статический сайт (dist) и отвечает конструктору на /api/audit.
+// ИИ: сначала Gemini (если задан секрет GEMINI_API_KEY), при ошибке или без ключа — Cloudflare Workers AI
+// (привязка AI в wrangler.jsonc, ключ не нужен). Ключи живут только здесь, в браузер не попадают.
+import { SYSTEM_PROMPT, RESPONSE_SCHEMA, JSON_SCHEMA, userMessage } from './prompt.js';
 
 const MAX_LEN = 600;              // символов на одно поле
 const LIMIT = 8;                  // запросов с одного IP…
@@ -9,7 +10,8 @@ const hits = new Map();           // простой лимит в памяти �
 
 export default {
   async fetch(req, env) {
-    const { pathname } = new URL(req.url);
+    const url = new URL(req.url);
+    const { pathname } = url;
     if (!pathname.startsWith('/api/')) return env.ASSETS ? env.ASSETS.fetch(req) : new Response('Not found', { status: 404 });
 
     const cors = corsHeaders(req, env);
@@ -31,15 +33,25 @@ export default {
     };
     if (input.process.length < 3) return json({ error: 'empty' }, 400, cors);
 
-    // Без ключа (локальная разработка) — отдаём заглушку, чтобы проверять интерфейс
-    if (!env.GEMINI_API_KEY) return json({ ...mock(input), mock: true }, 200, cors);
+    // Цепочка: Gemini → Workers AI. Первый, кто ответил, — тот и отвечает посетителю.
+    const providers = [];
+    if (env.GEMINI_API_KEY) providers.push(['gemini', askGemini]);
+    if (env.AI) providers.push(['workers-ai', askWorkersAI]);
 
-    try {
-      return json(await askGemini(input, env), 200, cors);
-    } catch (e) {
-      console.error(e);
-      return json({ error: e.status === 429 ? 'busy' : 'ai_failed' }, 502, cors);
+    let lastErr;
+    for (const [name, ask] of providers) {
+      try {
+        return json({ ...(await ask(input, env)), via: name }, 200, cors);
+      } catch (e) {
+        lastErr = e;
+        console.error(`[${name}]`, e.message || e);
+      }
     }
+
+    // Локальная разработка без ключа и без входа в Cloudflare — заглушка, чтобы проверять интерфейс.
+    // На боевом домене заглушку не показываем: посетитель увидит честную ошибку.
+    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname)) return json({ ...mock(input), via: 'mock' }, 200, cors);
+    return json({ error: lastErr?.status === 429 ? 'busy' : 'ai_failed' }, 502, cors);
   },
 };
 
@@ -59,23 +71,56 @@ async function askGemini(input, env) {
         thinkingConfig: { thinkingBudget: 0 }, // быстрее ответ, демо не нужна «долгая мысль»
       },
     }),
+    signal: AbortSignal.timeout(20000),
   });
   if (!res.ok) {
+    // 400 «User location is not supported» — Google не обслуживает регион, где запущен воркер
     const err = new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
     err.status = res.status;
     throw err;
   }
   const data = await res.json();
   const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
-  const r = JSON.parse(text);
-  return {
-    hours: Math.max(0, Math.round(Number(r.hours) || 0)),
-    bottlenecks: (Array.isArray(r.bottlenecks) ? r.bottlenecks : []).slice(0, 4).map(String),
-    agent: String(r.agent || ''),
-    format: String(r.format || ''),
-    assumptions: String(r.assumptions || ''),
+  return normalize(JSON.parse(text));
+}
+
+async function askWorkersAI(input, env) {
+  const model = env.CF_AI_MODEL || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+  const out = await env.AI.run(model, {
+    messages: [
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: userMessage(input) },
+    ],
+    response_format: { type: 'json_schema', json_schema: JSON_SCHEMA },
+    temperature: 0.4,
+    max_tokens: 1024,
+  });
+  // Ответ бывает в двух видах: { response } или в стиле OpenAI { choices[0].message.content }; объектом или строкой
+  const raw = out?.response ?? out?.choices?.[0]?.message?.content;
+  const r = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  if (!r || typeof r !== 'object') throw new Error('Workers AI: empty response');
+  return normalize(r);
+}
+
+const WORKDAYS = 21;
+const num = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
+
+// Приводим ответ любой модели к одному виду и обрезаем лишнее.
+// Часы считаем сами: модели плохо умножают, а цифра должна быть честной.
+function normalize(r) {
+  const perDay = num(r.per_day, 0, 5000);
+  const minutes = num(r.minutes, 0, 480);
+  const share = num(r.share, 0, 0.9);
+  const res = {
+    hours: r.off_topic ? 0 : Math.round((perDay * minutes * share * WORKDAYS) / 60),
+    bottlenecks: (Array.isArray(r.bottlenecks) ? r.bottlenecks : []).slice(0, 4).map((b) => String(b).slice(0, 120)),
+    agent: String(r.agent || '').slice(0, 400),
+    format: String(r.format || '').slice(0, 300),
+    assumptions: String(r.assumptions || '').slice(0, 300),
     off_topic: Boolean(r.off_topic),
   };
+  if (!res.off_topic && (!res.agent || !res.bottlenecks.length)) throw new Error('AI: incomplete answer');
+  return res;
 }
 
 function corsHeaders(req, env) {
@@ -110,7 +155,7 @@ function mock({ lang, process }) {
     bottlenecks: ru
       ? ['Данные переносят между системами вручную', 'Нет единого журнала обращений', 'Ответ клиенту ждёт свободного менеджера']
       : ['Data is copied between systems by hand', 'No single request log', 'Replies wait for a free manager'],
-    agent: (ru ? 'Заглушка (нет ключа Gemini). Процесс: ' : 'Mock (no Gemini key). Process: ') + process.slice(0, 80),
+    agent: (ru ? 'Заглушка (ИИ не подключён локально). Процесс: ' : 'Mock (AI not connected locally). Process: ') + process.slice(0, 80),
     format: ru ? 'Подходит для пилота на одном процессе.' : 'A good fit for a single-process pilot.',
     assumptions: ru ? '40 заявок в день, 5 минут на заявку.' : '40 requests a day, 5 minutes each.',
     off_topic: false,
