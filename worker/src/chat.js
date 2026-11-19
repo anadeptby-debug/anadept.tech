@@ -57,12 +57,12 @@ const RULES = `
 // Примеры правильных ответов (few-shot): так модель куда лучше держит тон, чем по одному списку правил
 const EXAMPLES = {
   ru: [
-    ['Сколько у вас клиентов?', 'Наша команда пришла в ИИ из автоматизации производства и учёта, за плечами — завершённые проекты на крупном производстве с 800+ сотрудниками: [цифровой цех на QR-кодах](/cases/qr-workshop/) и [автоматический расчёт зарплаты](/cases/piecework-payroll/). А в какой сфере ваш бизнес? Покажу, что можно сделать у вас.'],
+    ['Сколько у вас клиентов?', 'Наша команда пришла в ИИ из автоматизации производства и учёта, за плечами — завершённые проекты на крупном производстве с 800+ сотрудниками: [автоматизация производства с учётом по QR-кодам](/cases/qr-workshop/) и [автоматизация расчёта зарплаты](/cases/piecework-payroll/). А в какой сфере ваш бизнес? Покажу, что можно сделать у вас.'],
     ['Есть сертификаты Microsoft?', 'Для нас главный сертификат — результат, подтверждённый замером «до и после». На бесплатной консультации разберём ваш процесс и покажем, сколько часов он может вернуть. [Записаться](/contact/)'],
     ['Работали с ресторанами?', 'Наш подход работает в любой отрасли: если в ресторане много ручной работы — заказы поставщикам, заявки, отчёты, ответы гостям, — это можно автоматизировать. Какой процесс отнимает у вас больше всего времени?'],
   ],
   en: [
-    ['How many clients do you have?', 'Our team came to AI from automating real manufacturing and accounting systems, with completed projects at a large manufacturer with 800+ employees: a [QR-based digital shop floor](/en/cases/qr-workshop/) and [automatic piece-rate payroll](/en/cases/piecework-payroll/). What industry are you in? I can show what we could do for you.'],
+    ['How many clients do you have?', 'Our team came to AI from automating real manufacturing and accounting systems, with completed projects at a large manufacturer with 800+ employees: [production automation with QR tracking](/en/cases/qr-workshop/) and [payroll automation](/en/cases/piecework-payroll/). What industry are you in? I can show what we could do for you.'],
     ['Do you have Microsoft certifications?', 'For us the certificate that matters is a result confirmed by a before-and-after measurement. On a free consultation we will look at your process and show how many hours it can free up. [Book a call](/en/contact/)'],
     ['Have you worked with restaurants?', 'Our approach works in any industry: if there is a lot of manual work — supplier orders, requests, reports, guest questions — it can be automated. Which process takes the most time for you?'],
   ],

@@ -36,10 +36,10 @@ const ru: CaseStudy[] = [
     slug: 'qr-workshop',
     tag: 'Производство · 1С',
     meta: ['Производитель межкомнатных дверей', '800+ сотрудников', '8 производственных участков', '3 базы 1С'],
-    title: 'Цифровой цех: учёт работы по QR-коду прямо в 1С',
+    title: 'Автоматизация производства: учёт работы по QR-коду прямо в 1С',
     lead: 'Мастера каждый день тратили около 3 часов на перенос выработки из журналов в 1С. Теперь рабочий сканирует бейдж и QR-код на листе заказа, система сама понимает, кто, что и сколько сделал, а мастер подтверждает готовые данные одним кликом.',
     card: {
-      title: 'Цифровой цех за один QR-скан',
+      title: 'Автоматизация производства',
       text: 'Выработку больше не переносят в 1С вручную: рабочий сканирует бейдж и QR-код на листе заказа, мастер подтверждает готовые данные одним кликом.',
       figures: [
         { v: '~790 ч', l: 'в год экономит каждый мастер' },
@@ -123,10 +123,10 @@ const ru: CaseStudy[] = [
     slug: 'piecework-payroll',
     tag: 'Производство · Зарплата',
     meta: ['Тот же клиент', '7 производственных бригад', '45 групп рабочих', '~1 000 документов выпуска в месяц'],
-    title: 'Зарплата без Excel: автоматический расчёт сдельной оплаты',
+    title: 'Автоматизация расчёта зарплаты: сдельная оплата по фактической выработке',
     lead: 'Расчёт сдельной зарплаты проходил несколько ручных шагов: операция → сумма на группу → таблица мастера → распределение в бухгалтерии. Мы сделали так, что деньги за каждую операцию сразу делятся между теми, кто её реально выполнил, а итог совпадает с бухгалтерией до копейки. Закрытие зарплаты, которое растягивалось почти на неделю, теперь укладывается в час.',
     card: {
-      title: 'Зарплата, которая сходится до копейки',
+      title: 'Автоматизация расчёта зарплаты',
       text: 'Сдельная оплата считается по фактической работе каждого сотрудника. Закрытие зарплаты, которое тянулось почти неделю, теперь занимает около часа.',
       figures: [
         { v: '−1 неделя', l: 'на закрытии зарплаты' },
@@ -232,10 +232,10 @@ const en: CaseStudy[] = [
     slug: 'qr-workshop',
     tag: 'Manufacturing · 1C',
     meta: ['Interior door manufacturer', '800+ employees', '8 production sites', '3 1C databases'],
-    title: 'Digital shop floor: tracking work by QR code, straight into 1C',
+    title: 'Production automation: tracking work by QR code, straight into 1C',
     lead: 'Foremen spent about 3 hours a day transferring output from their logs into 1C. Now a worker scans their badge and the QR code on the order sheet, the system knows who did what and how much, and the foreman approves the ready data in one click.',
     card: {
-      title: 'A digital shop floor in one QR scan',
+      title: 'Production automation',
       text: 'Output no longer has to be entered into 1C by hand: workers scan their badge and the QR code on the order sheet, the foreman approves the ready data in one click.',
       figures: [
         { v: '~790 h', l: 'a year saved by every foreman' },
@@ -319,10 +319,10 @@ const en: CaseStudy[] = [
     slug: 'piecework-payroll',
     tag: 'Manufacturing · Payroll',
     meta: ['Same client', '7 production crews', '45 worker groups', '~1,000 output documents a month'],
-    title: 'Payroll without Excel: automatic piece-rate pay',
+    title: 'Payroll automation: piece-rate pay based on actual output',
     lead: 'Piece-rate pay went through several manual steps: operation → group total → foreman’s table → distribution in accounting. We made the money for every operation go straight to the people who actually did it, and the total matches accounting to the kopeck. Closing payroll used to take almost a week — now it takes about an hour.',
     card: {
-      title: 'Payroll that adds up to the kopeck',
+      title: 'Payroll automation',
       text: 'Pay is calculated from each employee’s actual output. Closing payroll used to take almost a week — now it takes about an hour.',
       figures: [
         { v: '−1 week', l: 'to close payroll' },
