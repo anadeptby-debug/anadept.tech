@@ -8,7 +8,7 @@ const L = caseLabels[lang];
 const href = lurl(lang, `/cases/${c.slug}/`);
 const rid = `case-more-${c.slug}`;
 ---
-<article class="cc reveal" style={`transition-delay:${i * 80}ms`}>
+<article class="cc reveal" style={`transition-delay:${i * 80}ms`} data-href={href}>
   <div class="cc-main">
     <div class="cc-txt">
       <span class="cc-tag">{L.case} {String(i + 1).padStart(2, '0')} · {c.tag}</span>
@@ -40,6 +40,12 @@ const rid = `case-more-${c.slug}`;
 </article>
 
 <script>
+  // Клик по карточке (кроме кнопок и ссылок) открывает подробную страницу кейса
+  document.querySelectorAll<HTMLElement>('.cc[data-href]').forEach((card) => card.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a, button')) return;
+    if (getSelection()?.toString()) return; // выделяли текст — не переходим
+    location.href = card.dataset.href!;
+  }));
   document.querySelectorAll<HTMLButtonElement>('.cc-toggle').forEach((b) => b.addEventListener('click', () => {
     const open = b.getAttribute('aria-expanded') !== 'true';
     b.setAttribute('aria-expanded', String(open));
@@ -50,6 +56,7 @@ const rid = `case-more-${c.slug}`;
 
 <style>
   .cc { padding: clamp(24px, 3.4vw, 44px); border-radius: var(--radius-l); background: var(--paper); border: 1px solid var(--line); transition: box-shadow .4s, border-color .3s; }
+  .cc { cursor: pointer; }
   .cc:hover { box-shadow: var(--shadow); border-color: var(--line-2); }
   .cc-main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
   .cc-txt { display: grid; gap: 14px; justify-items: start; }

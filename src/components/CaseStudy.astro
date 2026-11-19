@@ -2,7 +2,7 @@
 // Полная страница кейса: цифры → задача → решение → как работает → было/стало → результаты → CTA
 import type { Lang } from '../i18n/content';
 import { cases, caseLabels, type CaseStudy } from '../i18n/cases';
-import { lurl } from '../lib/url';
+import { url, lurl } from '../lib/url';
 const { c, lang } = Astro.props as { c: CaseStudy; lang: Lang };
 const L = caseLabels[lang];
 const list = cases[lang];
@@ -109,6 +109,22 @@ const pct = (v: number, total: number) => Math.round((v / total) * 100);
     </div>
   </section>
 
+  {!!c.gallery?.length && (
+    <section class="block">
+      <div class="wrap">
+        <h2 class="reveal">{L.gallery}</h2>
+        <div class="gal">
+          {c.gallery.map((g) => (
+            <figure class="reveal">
+              <a href={url(g.src)} target="_blank" rel="noopener"><img src={url(g.src)} alt={g.alt} loading="lazy" /></a>
+              {g.caption && <figcaption>{g.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
   {(c.guards || c.checks) && (
     <section class="block">
       <div class="wrap split">
@@ -213,7 +229,8 @@ const pct = (v: number, total: number) => Math.round((v / total) * 100);
   .outro { margin-top: 24px; color: var(--muted); line-height: 1.65; }
 
   /* Что сделали */
-  .done { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .done { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .done:has(> li:nth-child(3):last-child) { grid-template-columns: repeat(3, 1fr); }
   .done li { display: grid; align-content: start; gap: 12px; padding: 30px 30px 32px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
   .done .n { font-size: 13px; font-weight: 600; color: var(--accent); }
   .done h3 { font-size: clamp(20px, 1.8vw, 24px); }
@@ -251,6 +268,14 @@ const pct = (v: number, total: number) => Math.round((v / total) * 100);
   .flow p { padding-top: 11px; color: var(--on-dark-muted); line-height: 1.6; }
   .flow p b { color: var(--on-dark); font-weight: 600; }
   .flow-after { max-width: 820px; margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--on-dark-line); color: var(--on-dark-muted); font-size: 15px; }
+
+  /* Скриншоты */
+  .gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 32px; }
+  .gal figure { margin: 0; display: grid; gap: 10px; }
+  .gal a { display: block; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+  .gal img { width: 100%; height: auto; display: block; transition: transform .4s var(--ease); }
+  .gal a:hover img { transform: scale(1.03); }
+  .gal figcaption { font-size: 14px; color: var(--muted); line-height: 1.45; }
 
   /* Чек-лист */
   .checks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -303,7 +328,7 @@ const pct = (v: number, total: number) => Math.round((v / total) * 100);
     .fig-row li:nth-child(n+3) { border-top: 1px solid var(--line); }
   }
   @media (max-width: 680px) {
-    .done, .checks { grid-template-columns: 1fr; }
+    .done, .done:has(> li:nth-child(3):last-child), .checks { grid-template-columns: 1fr; }
     .cmp-row { grid-template-columns: 1fr; gap: 6px; }
     .cmp-row.head { display: none; }
     .cmp em { display: inline; font-style: normal; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-right: 8px; color: var(--faint); }
