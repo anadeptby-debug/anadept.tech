@@ -1,0 +1,5 @@
+# Cloudflare: старый адрес страницы «Цены» → «Как мы работаем»
+/pricing /process/ 301
+/pricing/ /process/ 301
+/en/pricing /en/process/ 301
+/en/pricing/ /en/process/ 301

@@ -2,10 +2,11 @@
 // ИИ: сначала Gemini (если задан секрет GEMINI_API_KEY), при ошибке или без ключа — Cloudflare Workers AI
 // (привязка AI в wrangler.jsonc, ключ не нужен). Ключи живут только здесь, в браузер не попадают.
 import { SYSTEM_PROMPT, RESPONSE_SCHEMA, JSON_SCHEMA, userMessage } from './prompt.js';
+import { handleChat, chatMock } from './chat.js';
 
 const MAX_LEN = 600;              // символов на одно поле
-const LIMIT = 8;                  // запросов с одного IP…
-const WINDOW_MS = 10 * 60 * 1000; // …за 10 минут
+const LIMITS = { audit: 8, chat: 30 }; // запросов с одного IP…
+const WINDOW_MS = 10 * 60 * 1000;     // …за 10 минут
 const hits = new Map();           // простой лимит в памяти инстанса (защита от случайного спама)
 
 export default {
@@ -16,14 +17,26 @@ export default {
 
     const cors = corsHeaders(req, env);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (req.method !== 'POST' || pathname !== '/api/audit') return json({ error: 'not_found' }, 404, cors);
+    const route = pathname === '/api/audit' ? 'audit' : pathname === '/api/chat' ? 'chat' : null;
+    if (req.method !== 'POST' || !route) return json({ error: 'not_found' }, 404, cors);
     if (!cors['Access-Control-Allow-Origin']) return json({ error: 'forbidden' }, 403, cors);
 
     const ip = req.headers.get('CF-Connecting-IP') || 'local';
-    if (limited(ip)) return json({ error: 'rate_limited' }, 429, cors);
+    if (limited(`${route}:${ip}`, LIMITS[route])) return json({ error: 'rate_limited' }, 429, cors);
 
     let body;
     try { body = await req.json(); } catch { return json({ error: 'bad_request' }, 400, cors); }
+    const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname);
+
+    if (route === 'chat') {
+      try {
+        return json(await handleChat(body, env), 200, cors);
+      } catch (e) {
+        if (e.code === 'empty') return json({ error: 'empty' }, 400, cors);
+        if (isLocal) return json(chatMock(body.lang === 'en' ? 'en' : 'ru'), 200, cors);
+        return json({ error: e.status === 429 ? 'busy' : 'ai_failed' }, 502, cors);
+      }
+    }
     const clean = (v) => String(v ?? '').trim().slice(0, MAX_LEN);
     const input = {
       lang: body.lang === 'en' ? 'en' : 'ru',
@@ -50,7 +63,7 @@ export default {
 
     // Локальная разработка без ключа и без входа в Cloudflare — заглушка, чтобы проверять интерфейс.
     // На боевом домене заглушку не показываем: посетитель увидит честную ошибку.
-    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname)) return json({ ...mock(input), via: 'mock' }, 200, cors);
+    if (isLocal) return json({ ...mock(input), via: 'mock' }, 200, cors);
     return json({ error: lastErr?.status === 429 ? 'busy' : 'ai_failed' }, 502, cors);
   },
 };
@@ -137,12 +150,12 @@ function corsHeaders(req, env) {
   };
 }
 
-function limited(ip) {
+function limited(key, limit) {
   const now = Date.now();
-  const list = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  const list = (hits.get(key) || []).filter((t) => now - t < WINDOW_MS);
   list.push(now);
-  hits.set(ip, list);
-  return list.length > LIMIT;
+  hits.set(key, list);
+  return list.length > limit;
 }
 
 const json = (obj, status, headers) =>

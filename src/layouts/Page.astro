@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import Header from '../components/Header.astro';
+import Assistant from '../components/Assistant.astro';
 import { dict, type Lang } from '../i18n/content';
 import { url, lurl } from '../lib/url';
 
@@ -24,6 +25,7 @@ const title = pageTitle ? `${pageTitle} — Anadept` : navItem ? `${navItem.labe
       <span>{t.footer.rights}</span>
     </div>
   </footer>
+  <Assistant t={t} lang={lang} />
 </Base>
 
 <style>
@@ -32,7 +34,7 @@ const title = pageTitle ? `${pageTitle} — Anadept` : navItem ? `${navItem.labe
   .page-top.home { padding-top: 0; }
   .sheet { background: var(--dark); }
   .sheet-in { background: var(--milk); border-radius: 72px 72px 0 0; padding-top: clamp(24px, 3vw, 40px); }
-  .ftr { padding: 40px 0 96px; color: var(--muted); font-size: 14px; }
+  .ftr { padding: 40px 0 150px; color: var(--muted); font-size: 14px; }
   .ftr-in { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
   .f-nav { display: flex; gap: 20px; flex-wrap: wrap; }
   .f-nav a:hover { color: var(--ink); }

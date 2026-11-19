@@ -23,7 +23,7 @@ import { dict, type Lang } from '../i18n/content';
 
 // Все страницы сайта на двух языках: RU без префикса, EN под /en/
 export function getStaticPaths() {
-  const pages = ['', 'services', 'cases', 'demo', 'pricing', 'about', 'contact', ...cases.ru.map((c) => `cases/${c.slug}`)];
+  const pages = ['', 'services', 'cases', 'demo', 'process', 'about', 'contact', ...cases.ru.map((c) => `cases/${c.slug}`)];
   return (['ru', 'en'] as const).flatMap((lang) =>
     pages.map((page) => ({
       params: { slug: [lang === 'en' ? 'en' : '', page].filter(Boolean).join('/') || undefined },
@@ -73,7 +73,7 @@ const cl = caseLabels[lang];
 
   {cs && <PageTop slot="top" eyebrow={`${cl.case} · ${cs.tag}`} title={cs.title} lead={cs.lead} meta={cs.meta} back={{ href: lurl(lang, '/cases/'), label: cl.allCases }} />}
   {cs && <CaseStudy c={cs} lang={lang} />}
-  {page === 'pricing' && <How t={t} />}
+  {page === 'process' && <How t={t} lang={lang} />}
   {page === 'about' && (<><Trust t={t} /><Faq t={t} /></>)}
   {page === 'contact' && <Contact t={t} />}
 </Page>

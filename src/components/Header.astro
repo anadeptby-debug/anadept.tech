@@ -26,16 +26,11 @@ const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает �
   </nav>
 </header>
 
-<a href={contact} class:list={["m-cta btn", { off: page === "contact" }]}>{t.nav.cta}<span class="arr">→</span></a>
 
 <script>
   const h = document.querySelector<HTMLElement>('.hdr')!;
-  const mcta = document.querySelector('.m-cta')!;
-  const contact = document.getElementById('contact');
   const on = () => {
     h.classList.toggle('scrolled', scrollY > 10);
-    const nearContact = contact ? contact.getBoundingClientRect().top < innerHeight : false;
-    mcta.classList.toggle('show', scrollY > innerHeight * 0.8 && !nearContact && !h.classList.contains('open'));
   };
   addEventListener('scroll', on, { passive: true }); on();
 
@@ -60,7 +55,7 @@ const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает �
   .logo { margin-right: auto; display: inline-flex; flex: none; }
   .logo img { display: block; height: 25px; width: auto; }
   .nav { display: flex; align-items: center; gap: 30px; font-size: 14px; }
-  .nav a { padding-block: 10px; transition: color .16s; }
+  .nav a { padding-block: 10px; white-space: nowrap; transition: color .16s; }
   .nav a:hover, .nav a.cur { color: var(--peach); }
   .hdr-r { display: flex; align-items: center; gap: 18px; }
   .lang { font-size: 13px; color: var(--on-dark-muted); }
@@ -80,13 +75,8 @@ const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает �
   .m-nav a:last-child { margin-bottom: 16px; }
   .open .m-nav { grid-template-rows: 1fr; }
 
-  .m-cta, .m-cta.off { display: none; }
   @media (min-width: 1081px) { .m-nav { display: none; } }
   @media (max-width: 1080px) { .nav { display: none; } .burger { display: block; } }
-  @media (max-width: 920px) {
-    .m-cta { display: flex; position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 45; box-shadow: 0 12px 30px -10px rgba(0,0,0,.4); transform: translateY(140%); transition: transform .4s var(--ease); }
-    .m-cta.show { transform: none; }
-  }
   @media (max-width: 700px) { .hdr-in { height: 76px; gap: 12px; } .hdr-cta { padding: 0 16px; font-size: 12px; } }
   @media (max-width: 420px) { .hdr-cta { display: none; } }
 </style>
