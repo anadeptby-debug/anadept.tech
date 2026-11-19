@@ -7,17 +7,17 @@ const { t, lang } = Astro.props as { t: Dict; lang: Lang };
 const a = t.assistant;
 const api = import.meta.env.PUBLIC_CHAT_API || (import.meta.env.DEV ? 'http://localhost:8787/api/chat' : url('/api/chat'));
 const cfg = { api, lang, greeting: a.greeting, thinking: a.thinking, errors: a.errors };
-const icon = url('/brand/icon-512.png');
+const icon = url('/brand/mark-white.png'); // белый знак на прозрачном фоне — внутри тёмного круга
 ---
 <div class="asst" data-asst={JSON.stringify(cfg)}>
   <button type="button" class="a-launch" aria-label={a.title}>
-    <img src={icon} alt="" width="26" height="26" />
+    <img src={icon} alt="" width="24" height="19" />
     <span class="a-dot" aria-hidden="true"></span>
   </button>
 
   <div class="a-win">
     <header class="a-head">
-      <span class="a-title"><span class="a-ava sm"><img src={icon} alt="" width="16" height="16" /></span>{a.title}</span>
+      <span class="a-title"><span class="a-ava sm"><img src={icon} alt="" width="13" height="10" /></span>{a.title}</span>
       <span class="a-tools">
         <button type="button" class="a-clear">{a.clear}</button>
         <button type="button" class="a-close" aria-label={a.close}><i></i></button>
@@ -32,7 +32,7 @@ const icon = url('/brand/icon-512.png');
 
     <form class="a-bar" autocomplete="off">
       <label class="sr" for="a-input">{a.placeholder}</label>
-      <span class="a-ava" aria-hidden="true"><img src={icon} alt="" width="18" height="18" /></span>
+      <span class="a-ava" aria-hidden="true"><img src={icon} alt="" width="16" height="13" /></span>
       <input id="a-input" name="q" maxlength="800" placeholder={a.placeholder} enterkeyhint="send" />
       <button type="submit" class="a-send" aria-label={a.send}><i></i></button>
     </form>
@@ -220,6 +220,7 @@ const icon = url('/brand/icon-512.png');
   .a-bar:focus-within { border-color: var(--line-2); background: #fff; }
   .a-ava { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--dark); }
   .a-ava.sm { width: 24px; height: 24px; }
+  .a-ava img, .a-launch img { display: block; height: auto; transform: translateY(-1px); }
   .a-bar input { flex: 1; min-width: 0; height: 36px; border: 0; background: none; outline: none; font-size: 15px; }
   .a-bar input::placeholder { color: var(--faint); }
   .a-send { flex: none; position: relative; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--peach); cursor: pointer; transition: background .2s, opacity .2s; }
