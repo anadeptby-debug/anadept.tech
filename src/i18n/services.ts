@@ -2,7 +2,7 @@
 // карточка №i на сайте ведёт на страницу №i отсюда. Цен не указываем: стоимость — после консультации.
 import type { Lang } from './content';
 
-type Variant = { t: string; d: string; get: string };
+type Variant = { t: string; d: string; get: string; group?: string }; // group — раздел на странице (по отделам)
 export type ServicePage = {
   slug: string;
   lead: string;
@@ -15,22 +15,45 @@ export type ServicePage = {
 const ru: ServicePage[] = [
   {
     slug: 'process-automation',
-    lead: 'Берём процесс, который держится на ручном труде, и делаем так, чтобы рутину выполняла система, а люди занимались тем, что требует решений. Начинаем с замера: сколько процесс стоит сейчас, — и автоматизируем то, что окупится.',
+    lead: 'Берём процессы, которые держатся на ручном труде, — документы, оплаты, заказы, склад, производство, кадры — и делаем так, чтобы рутину выполняла система, а люди занимались тем, что требует решений. Начинаем с замера: сколько процесс стоит сейчас, — и автоматизируем то, что окупится.',
     pains: [
       'Сотрудники вручную переносят данные между почтой, Excel и 1С',
-      'Согласования идут по почте и в мессенджерах, документы ждут подписи и теряются',
+      'Счета, накладные и акты вносятся руками и сверяются вручную',
+      'Согласования идут по почте и в мессенджерах, документы ждут подписи',
+      'Оплаты разносятся с задержкой, а просрочки замечают слишком поздно',
+      'Заказы клиентов и поставщикам собираются вручную, позиции теряются',
       'Ошибки ручного ввода всплывают поздно — в отчётах или у клиента',
       'Процесс держится на одном человеке и останавливается, когда он в отпуске',
+      'Новые сотрудники неделями разбираются, как всё устроено',
     ],
     variants: [
-      { t: 'Распознавание документов в 1С', d: 'Счета, накладные, ТТН и акты из почты распознаются, сверяются с договором и попадают в 1С. Сотрудник проверяет только расхождения.', get: 'документ в 1С за минуту, сверенный с договором' },
-      { t: 'Согласования и маршруты документов', d: 'Заявки, счета на оплату и договоры сами идут по цепочке согласования — с напоминаниями и историей решений.', get: 'всегда понятно, у кого документ и сколько он ждёт' },
-      { t: 'Цифровой учёт производства', d: 'Учёт выработки по QR-коду и сканерам, сдельная зарплата без промежуточных таблиц. Данные из цеха сразу в 1С.', get: 'видно, кто, что и сколько сделал, в момент работы' },
-      { t: 'Заказы поставщикам по остаткам', d: 'Система считает потребность по остаткам и нормам и готовит черновики заказов. Менеджер проверяет только позиции под вопросом.', get: 'заказы собираются за минуты, без пропущенных позиций' },
+      { group: 'Документы', t: 'Распознавание документов в 1С', d: 'Счета, накладные, ТТН и акты из почты распознаются, сверяются с договором и попадают в 1С. Сотрудник проверяет только расхождения.', get: 'документ в 1С за минуту, сверенный с договором' },
+      { group: 'Документы', t: 'Сверка с контрагентами', d: 'Акты сверки, счета и накладные от партнёров сравниваются с данными 1С — на экране только расхождения.', get: 'сверка за минуты, а не за дни' },
+      { group: 'Документы', t: 'Договоры и документы по шаблонам', d: 'Договоры, допсоглашения, счета и коммерческие предложения собираются из данных CRM и 1С с проверкой реквизитов.', get: 'документ готов за минуту, без опечаток' },
+      { group: 'Документы', t: 'Электронный архив с умным поиском', d: 'Сканы и файлы сами раскладываются по контрагентам и типам и находятся по смыслу: «договор с поставщиком упаковки за 2024 год».', get: 'нужный документ за секунды' },
+
+      { group: 'Финансы и бухгалтерия', t: 'Разнесение банковских выписок', d: 'Платежи из выписки сами привязываются к счетам и контрагентам в 1С, непонятные уходят на проверку.', get: 'оплаты разнесены в день поступления' },
+      { group: 'Финансы и бухгалтерия', t: 'Контроль дебиторки и напоминания', d: 'Система видит просрочки и сама отправляет клиентам вежливые напоминания с копией счёта, менеджеру — сводку.', get: 'меньше просроченных платежей' },
+      { group: 'Финансы и бухгалтерия', t: 'Согласование заявок на оплату', d: 'Заявки на оплату идут по цепочке согласования с лимитами и напоминаниями, одобренные сразу попадают в реестр платежей.', get: 'всегда понятно, у кого заявка и сколько она ждёт' },
+      { group: 'Финансы и бухгалтерия', t: 'Авансовые отчёты по фото чеков', d: 'Сотрудник фотографирует чек — данные распознаются и попадают в авансовый отчёт.', get: 'отчёт за минуту вместо пачки чеков' },
+
+      { group: 'Склад, закупки и логистика', t: 'Обработка заказов клиентов', d: 'Заказ из почты, мессенджера или Excel распознаётся, проверяется по остаткам и ценам и создаётся в 1С.', get: 'заказ в системе без ручного ввода' },
+      { group: 'Склад, закупки и логистика', t: 'Заказы поставщикам по остаткам', d: 'Система считает потребность по остаткам и нормам и готовит черновики заказов. Менеджер проверяет только позиции под вопросом.', get: 'заказы за минуты, без пропущенных позиций' },
+      { group: 'Склад, закупки и логистика', t: 'Приёмка и инвентаризация со сканером', d: 'Поступления сверяются с заказом прямо при приёмке, инвентаризация идёт по штрихкодам и QR-кодам.', get: 'расхождения видны сразу' },
+      { group: 'Склад, закупки и логистика', t: 'Отслеживание доставок', d: 'Статусы от перевозчиков собираются автоматически, клиент получает уведомления о движении заказа.', get: 'меньше звонков «где мой заказ»' },
+
+      { group: 'Производство', t: 'Цифровой учёт производства', d: 'Учёт выработки по QR-коду и сканерам: видно, кто, какую операцию и в каком объёме выполнил. Данные из цеха сразу в 1С.', get: 'факт рядом с планом в момент работы' },
+      { group: 'Производство', t: 'Табель и сдельная зарплата', d: 'Время и выработка собираются автоматически, сдельная считается по фактической работе каждого — без промежуточных таблиц.', get: 'зарплата сходится с бухгалтерией до копейки' },
+      { group: 'Производство', t: 'Проверка спецификаций и техдокументации', d: 'Спецификации сверяются с чертежами и нормами до запуска в цех — система отмечает несоответствия.', get: 'ошибки находятся до производства' },
+
+      { group: 'Кадры и офис', t: 'Оформление новых сотрудников', d: 'Заявка на нового сотрудника запускает чек-лист: документы, доступы, рабочее место — с ответственными и сроками.', get: 'новичок готов к работе в первый день' },
+      { group: 'Кадры и офис', t: 'Внутренние заявки', d: 'Закупка, ремонт, пропуска, командировки — заявки идут по понятному маршруту с напоминаниями и историей.', get: 'ни одна заявка не теряется в переписке' },
+      { group: 'Кадры и офис', t: 'Графики смен и отпусков', d: 'Графики составляются с учётом отпусков, норм и пожеланий, сотрудники получают уведомления об изменениях.', get: 'график за минуты, без накладок' },
     ],
     cases: ['qr-workshop', 'piecework-payroll'],
     faq: [
-      { q: 'С какого процесса лучше начать?', a: 'С того, где больше всего ручной работы и понятен результат: обычно это документы, заявки или отчёты. На бесплатной консультации поможем выбрать и честно скажем, окупится ли автоматизация.' },
+      { q: 'С какого процесса лучше начать?', a: 'С того, где больше всего ручной работы и понятен результат: обычно это документы, оплаты или заказы. На бесплатной консультации поможем выбрать и честно скажем, окупится ли автоматизация.' },
+      { q: 'Можно автоматизировать сразу несколько процессов?', a: 'Можно, но надёжнее по очереди: начинаем с того, что быстрее окупится, и подтверждаем результат замером. Следующие процессы идут быстрее — основа уже готова.' },
       { q: 'Придётся менять 1С или CRM?', a: 'Нет. Мы встраиваемся в ваши текущие системы и не ломаем привычную работу — в наших проектах бухгалтерия продолжала работать как раньше.' },
     ],
   },
@@ -143,22 +166,45 @@ const ru: ServicePage[] = [
 const en: ServicePage[] = [
   {
     slug: 'process-automation',
-    lead: 'We take a process that relies on manual work and make the system do the routine, so people focus on decisions. We start by measuring what the process costs today — and automate what will pay off.',
+    lead: 'We take processes that rely on manual work — documents, payments, orders, warehouse, production, HR — and make the system do the routine, so people focus on decisions. We start by measuring what a process costs today — and automate what will pay off.',
     pains: [
       'Staff move data between email, Excel and 1C by hand',
-      'Approvals go through email and messengers; documents wait for sign-off and get lost',
+      'Invoices, delivery notes and acts are typed in and checked manually',
+      'Approvals go through email and messengers; documents wait for sign-off',
+      'Payments are matched late and overdue invoices are noticed too late',
+      'Customer and supplier orders are assembled by hand and items get missed',
       'Manual entry errors surface late — in reports or with the customer',
       'A process depends on one person and stops when they are on leave',
+      'New staff spend weeks figuring out how things work',
     ],
     variants: [
-      { t: 'Document recognition into 1C', d: 'Invoices, delivery notes and acts from email are recognised, checked against the contract and posted to 1C. Staff review only mismatches.', get: 'a document in 1C in a minute, checked against the contract' },
-      { t: 'Approval workflows', d: 'Requests, payment invoices and contracts move through the approval chain on their own — with reminders and a decision history.', get: 'always clear who has the document and for how long' },
-      { t: 'Digital production tracking', d: 'Output tracked by QR codes and scanners, piece-rate pay without intermediate tables. Shop-floor data goes straight to 1C.', get: 'see who did what and how much, as it happens' },
-      { t: 'Supplier orders from stock levels', d: 'The system calculates demand from stock and norms and drafts orders. The manager reviews only flagged items.', get: 'orders ready in minutes, nothing missed' },
+      { group: 'Documents', t: 'Document recognition into 1C', d: 'Invoices, delivery notes and acts from email are recognised, checked against the contract and posted to 1C. Staff review only mismatches.', get: 'a document in 1C in a minute, checked against the contract' },
+      { group: 'Documents', t: 'Reconciliation with counterparties', d: 'Reconciliation statements, invoices and delivery notes from partners are compared with 1C — only mismatches are shown.', get: 'reconciliation in minutes, not days' },
+      { group: 'Documents', t: 'Contracts and documents from templates', d: 'Contracts, amendments, invoices and proposals are assembled from CRM and 1C data with details checked.', get: 'a document in a minute, no typos' },
+      { group: 'Documents', t: 'Electronic archive with smart search', d: 'Scans and files are sorted by counterparty and type and found by meaning: “packaging supplier contract for 2024”.', get: 'the right document in seconds' },
+
+      { group: 'Finance & accounting', t: 'Bank statement matching', d: 'Payments from the statement are matched to invoices and counterparties in 1C automatically; unclear ones go to review.', get: 'payments matched the day they arrive' },
+      { group: 'Finance & accounting', t: 'Receivables control and reminders', d: 'The system spots overdue invoices and sends customers polite reminders with a copy of the invoice, and a summary to the manager.', get: 'fewer overdue payments' },
+      { group: 'Finance & accounting', t: 'Payment request approvals', d: 'Payment requests move through an approval chain with limits and reminders; approved ones go straight to the payment register.', get: 'always clear who has the request and for how long' },
+      { group: 'Finance & accounting', t: 'Expense reports from receipt photos', d: 'An employee photographs a receipt — the data is recognised and added to the expense report.', get: 'a report in a minute instead of a pile of receipts' },
+
+      { group: 'Warehouse, purchasing & logistics', t: 'Customer order processing', d: 'An order from email, a messenger or Excel is recognised, checked against stock and prices and created in 1C.', get: 'orders in the system without manual entry' },
+      { group: 'Warehouse, purchasing & logistics', t: 'Supplier orders from stock levels', d: 'The system calculates demand from stock and norms and drafts orders. The manager reviews only flagged items.', get: 'orders in minutes, nothing missed' },
+      { group: 'Warehouse, purchasing & logistics', t: 'Receiving and stocktaking with scanners', d: 'Deliveries are checked against the order on receipt; stocktaking runs on barcodes and QR codes.', get: 'mismatches visible immediately' },
+      { group: 'Warehouse, purchasing & logistics', t: 'Delivery tracking', d: 'Carrier statuses are collected automatically and customers get notifications as their order moves.', get: 'fewer “where is my order” calls' },
+
+      { group: 'Production', t: 'Digital production tracking', d: 'Output tracked by QR codes and scanners: who did which operation and how much. Shop-floor data goes straight to 1C.', get: 'actuals next to the plan as work happens' },
+      { group: 'Production', t: 'Timesheets and piece-rate pay', d: 'Time and output are collected automatically and piece-rate pay is calculated from each person’s actual work — no intermediate tables.', get: 'payroll matches accounting to the kopeck' },
+      { group: 'Production', t: 'Specification and technical document checks', d: 'Specifications are checked against drawings and norms before work starts — the system flags inconsistencies.', get: 'errors caught before production' },
+
+      { group: 'HR & office', t: 'Onboarding new employees', d: 'A new-hire request launches a checklist: documents, access, workplace — with owners and deadlines.', get: 'new hires ready to work on day one' },
+      { group: 'HR & office', t: 'Internal requests', d: 'Purchases, repairs, passes, business trips — requests follow a clear route with reminders and history.', get: 'no request gets lost in chats' },
+      { group: 'HR & office', t: 'Shift and vacation schedules', d: 'Schedules are built around vacations, norms and preferences; staff are notified of changes.', get: 'a schedule in minutes, no clashes' },
     ],
     cases: ['qr-workshop', 'piecework-payroll'],
     faq: [
-      { q: 'Which process should we start with?', a: 'The one with the most manual work and a clear result — usually documents, requests or reports. On a free consultation we will help you choose and tell you honestly whether it will pay off.' },
+      { q: 'Which process should we start with?', a: 'The one with the most manual work and a clear result — usually documents, payments or orders. On a free consultation we will help you choose and tell you honestly whether it will pay off.' },
+      { q: 'Can we automate several processes at once?', a: 'Yes, but one at a time is more reliable: we start with what pays off fastest and confirm the result with a measurement. Each next process goes faster — the foundation is already there.' },
       { q: 'Will we have to replace 1C or our CRM?', a: 'No. We build into your current systems without disrupting how people work — in our projects accounting kept working as before.' },
     ],
   },
