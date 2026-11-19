@@ -2,6 +2,7 @@
 // Тексты сайта подтягиваются сами: поменяли текст на сайте — помощник знает новый после деплоя.
 import { dict } from '../../src/i18n/content.ts';
 import { cases } from '../../src/i18n/cases.ts';
+import { services } from '../../src/i18n/services.ts';
 import company from '../../knowledge/company.md';
 
 const strip = (s) => String(s).replace(/<[^>]+>/g, ' ').replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ').trim();
@@ -16,10 +17,16 @@ function build(lang) {
   L.push(`- ${lang === 'en' ? 'Home' : 'Главная'}: ${p('/')}`);
   for (const l of t.nav.links) L.push(`- ${l.label}: ${p(l.href)}`);
   for (const c of cases[lang]) L.push(`- ${lang === 'en' ? 'Case' : 'Кейс'} «${c.card.title}»: ${p(`/cases/${c.slug}/`)}`);
+  services[lang].forEach((s, i) => L.push(`- ${lang === 'en' ? 'Service' : 'Услуга'} «${t.services.items[i].t}»: ${p(`/services/${s.slug}/`)}`));
   L.push(`- ${lang === 'en' ? 'Other language' : 'English version'}: ${lang === 'en' ? '/' : '/en/'}`);
 
   L.push('', `## ${t.services.title}`);
-  for (const s of t.services.items) L.push(`- ${s.t}: ${s.d}`);
+  t.services.items.forEach((s, i) => {
+    const d = services[lang][i];
+    L.push(`- ${s.t} (${p(`/services/${d.slug}/`)}): ${s.d}`);
+    // Для экономии квоты ИИ — только название варианта и результат; подробности на странице услуги
+    L.push(`  ${lang === 'en' ? 'Options' : 'Варианты'}: ${d.variants.map((v) => `${v.t} (${v.get})`).join('; ')}.`);
+  });
 
   // Цены в базу знаний намеренно не попадают: помощник их не называет, стоимость обсуждается на консультации
   L.push('', `## ${lang === 'en' ? 'How we work' : 'Как мы работаем'}: ${t.how.title}`);

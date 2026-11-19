@@ -19,11 +19,13 @@ import { lurl } from '../lib/url';
 import RealCases from '../components/RealCases.astro';
 import CaseStudy from '../components/CaseStudy.astro';
 import { cases, caseLabels, type CaseStudy as CaseData } from '../i18n/cases';
+import ServiceDetail from '../components/ServiceDetail.astro';
+import { services, serviceLabels } from '../i18n/services';
 import { dict, type Lang } from '../i18n/content';
 
 // Все страницы сайта на двух языках: RU без префикса, EN под /en/
 export function getStaticPaths() {
-  const pages = ['', 'services', 'cases', 'demo', 'process', 'about', 'contact', ...cases.ru.map((c) => `cases/${c.slug}`)];
+  const pages = ['', 'services', 'cases', 'demo', 'process', 'about', 'contact', ...cases.ru.map((c) => `cases/${c.slug}`), ...services.ru.map((s) => `services/${s.slug}`)];
   return (['ru', 'en'] as const).flatMap((lang) =>
     pages.map((page) => ({
       params: { slug: [lang === 'en' ? 'en' : '', page].filter(Boolean).join('/') || undefined },
@@ -36,8 +38,11 @@ const { lang, page } = Astro.props as { lang: Lang; page: string };
 const t = dict[lang];
 const cs: CaseData | undefined = page.startsWith('cases/') ? cases[lang].find((c) => `cases/${c.slug}` === page) : undefined;
 const cl = caseLabels[lang];
+const si = page.startsWith('services/') ? services[lang].findIndex((s) => `services/${s.slug}` === page) : -1;
+const svc = si >= 0 ? { ...services[lang][si], name: t.services.items[si].t } : undefined;
+const sl = serviceLabels[lang];
 ---
-<Page lang={lang} page={page} title={cs?.card.title}>
+<Page lang={lang} page={page} title={cs?.card.title ?? svc?.name}>
   {/* Главная: короткие версии разделов, «подробнее» ведёт на отдельные страницы */}
   {page === '' && <Hero slot="top" t={t} lang={lang} />}
   {page === '' && (
@@ -73,6 +78,9 @@ const cl = caseLabels[lang];
 
   {cs && <PageTop slot="top" eyebrow={`${cl.case} · ${cs.tag}`} title={cs.title} lead={cs.lead} meta={cs.meta} back={{ href: lurl(lang, '/cases/'), label: cl.allCases }} />}
   {cs && <CaseStudy c={cs} lang={lang} />}
+
+  {svc && <PageTop slot="top" eyebrow={sl.eyebrow} title={svc.name} lead={svc.lead} back={{ href: lurl(lang, '/services/'), label: sl.back }} />}
+  {svc && <ServiceDetail t={t} lang={lang} i={si} />}
   {page === 'process' && <How t={t} lang={lang} />}
   {page === 'about' && (<><Trust t={t} /><Faq t={t} /></>)}
   {page === 'contact' && <Contact t={t} />}

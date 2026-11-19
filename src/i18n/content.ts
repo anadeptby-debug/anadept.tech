@@ -53,7 +53,7 @@ const ru = {
     title: 'Чем мы можем помочь',
     lead: 'Разбираемся в ваших задачах и находим способы решить их с помощью автоматизации и внедрения AI-решений.',
     listTitle: 'Наши услуги',
-    cursor: 'Обсудить',
+    cursor: 'Подробнее',
     items: [
       { t: 'Автоматизация бизнес-процессов', d: 'Избавляем от рутинных задач и ручной работы. Автоматизируем процессы от начала до конца, чтобы сотрудники тратили меньше времени на повторяющиеся действия, а бизнес работал быстрее и эффективнее.' },
       { t: 'AI-решения для бизнеса', d: 'Внедряем искусственный интеллект в повседневную работу бизнеса: от обработки документов и анализа данных до AI-ассистентов и автоматизации сложных задач.' },
@@ -269,7 +269,7 @@ const en: Dict = {
     title: 'How we can help',
     lead: 'We dig into your challenges and find ways to solve them with automation and AI.',
     listTitle: 'Our services',
-    cursor: 'Discuss',
+    cursor: 'Learn more',
     items: [
       { t: 'Business process automation', d: 'We take routine and manual work off your plate. Processes are automated end to end, so people spend less time on repetitive tasks and the business runs faster and leaner.' },
       { t: 'AI solutions for business', d: 'We bring AI into everyday work: from document processing and data analysis to AI assistants and automating complex tasks.' },

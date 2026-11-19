@@ -1,6 +1,7 @@
 ---
 import type { Dict, Lang } from '../i18n/content';
 import { lurl } from '../lib/url';
+import { services as details } from '../i18n/services';
 const { t, lang } = Astro.props as { t: Dict; lang: Lang };
 const s = t.services;
 ---
@@ -11,7 +12,7 @@ const s = t.services;
     </div>
     <div class="grid">
       {s.items.map((it, i) => (
-        <a href={lurl(lang, '/contact/')} class="svc reveal" style={`transition-delay:${(i % 3) * 70}ms`} data-cursor={s.cursor}>
+        <a href={lurl(lang, `/services/${details[lang][i].slug}/`)} class="svc reveal" style={`transition-delay:${(i % 3) * 70}ms`} data-cursor={s.cursor}>
           <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
           <h3>{it.t}</h3>
           <p>{it.d}</p>

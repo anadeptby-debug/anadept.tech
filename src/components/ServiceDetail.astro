@@ -1,0 +1,176 @@
+---
+// Подробная страница услуги: задачи → варианты → похожие кейсы → как начинаем → вопросы → CTA → другие услуги
+import type { Dict, Lang } from '../i18n/content';
+import { services, serviceLabels } from '../i18n/services';
+import { cases } from '../i18n/cases';
+import { lurl } from '../lib/url';
+const { t, lang, i } = Astro.props as { t: Dict; lang: Lang; i: number };
+const s = services[lang][i];
+const L = serviceLabels[lang];
+const related = s.cases.map((slug) => cases[lang].find((c) => c.slug === slug)!).filter(Boolean);
+const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t, k })).filter((x) => x.k !== i);
+---
+<article class="sv">
+  <section class="block">
+    <div class="wrap split">
+      <h2 class="reveal">{L.painsTitle}</h2>
+      <ul class="pains reveal">
+        {s.pains.map((p) => <li>{p}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <h2 class="reveal">{L.variantsTitle}</h2>
+      <ol class="vars">
+        {s.variants.map((v, k) => (
+          <li class="reveal" style={`transition-delay:${(k % 2) * 70}ms`}>
+            <span class="n">{String(k + 1).padStart(2, '0')}</span>
+            <h3>{v.t}</h3>
+            <p>{v.d}</p>
+            <div class="get"><span>{L.getLabel}</span>{v.get}</div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="block">
+      <div class="wrap">
+        <h2 class="reveal">{L.casesTitle}</h2>
+        <div class="rel">
+          {related.map((c) => (
+            <a class="rel-card reveal" href={lurl(lang, `/cases/${c.slug}/`)}>
+              <span class="rel-tag">{c.tag}</span>
+              <b>{c.card.title}</b>
+              <span class="rel-txt">{c.card.text}</span>
+              <span class="rel-figs">{c.card.figures.slice(0, 2).map((f) => <span><em>{f.v}</em> {f.l}</span>)}</span>
+              <span class="rel-more">{L.more}<span aria-hidden="true">→</span></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="block">
+    <div class="wrap">
+      <div class="start reveal">
+        <h2>{L.startTitle}</h2>
+        <ol>
+          {L.start.map((st, k) => <li><span class="node">{k + 1}</span><div><b>{st.t}</b><p>{st.d}</p></div></li>)}
+        </ol>
+        <a class="start-more" href={lurl(lang, '/process/')}>{L.startMore}<span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap split">
+      <h2 class="reveal">{L.faqTitle}</h2>
+      <div class="faq reveal">
+        {s.faq.map((f) => (
+          <details>
+            <summary><span>{f.q}</span><i></i></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta reveal">
+        <h2>{L.cta.title}</h2>
+        <div class="cta-btns">
+          <a class="btn" href={lurl(lang, '/contact/')}>{L.cta.btn}<span class="arr">→</span></a>
+          <a class="cta-demo" href={lurl(lang, '/demo/')}>{L.cta.demo}</a>
+        </div>
+      </div>
+
+      <nav class="others" aria-label={L.others}>
+        <h3>{L.others}</h3>
+        <ul>
+          {others.map((o) => <li><a href={lurl(lang, `/services/${o.slug}/`)}>{o.name}<span aria-hidden="true">→</span></a></li>)}
+        </ul>
+      </nav>
+    </div>
+  </section>
+</article>
+
+<style>
+  .sv h2 { font-size: clamp(28px, 3.2vw, 42px); }
+  .block { padding: clamp(36px, 4.5vw, 64px) 0; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr); gap: clamp(24px, 5vw, 80px); align-items: start; }
+
+  .pains { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .pains li { position: relative; padding: 18px 0 18px 30px; border-bottom: 1px solid var(--line); font-size: 17px; line-height: 1.55; color: var(--ink-2); }
+  .pains li::before { content: ''; position: absolute; left: 4px; top: 30px; width: 10px; height: 2px; background: var(--accent); }
+
+  .vars { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .vars li { display: grid; align-content: start; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 30px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
+  .vars li:last-child:nth-child(odd) { grid-column: 1 / -1; } /* нечётный последний — на всю ширину */
+  .vars .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .vars h3 { font-size: clamp(20px, 1.9vw, 25px); }
+  .vars p { color: var(--muted); font-size: 15.5px; line-height: 1.6; }
+  .get { display: grid; gap: 4px; margin-top: 6px; padding-top: 14px; border-top: 1px dashed var(--line-2); font-size: 15px; font-weight: 500; }
+  .get span { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+
+  .rel { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 32px; }
+  .rel-card { display: grid; gap: 10px; padding: 28px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); transition: transform .4s var(--ease), box-shadow .4s, border-color .3s; }
+  .rel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-2); }
+  .rel-tag { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+  .rel-card b { font-family: var(--font-head); font-size: 22px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
+  .rel-txt { color: var(--muted); font-size: 15px; line-height: 1.55; }
+  .rel-figs { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+  .rel-figs em { font-style: normal; font-weight: 600; color: var(--accent); }
+  .rel-more { display: inline-flex; gap: 8px; font-size: 14px; font-weight: 500; }
+  .rel-more span { color: var(--accent); transition: transform .3s var(--ease); }
+  .rel-card:hover .rel-more span { transform: translateX(3px); }
+
+  .start { position: relative; overflow: hidden; padding: clamp(28px, 4vw, 52px); border-radius: 32px; background: var(--dark); color: var(--on-dark); }
+  .start::before { content: ''; position: absolute; right: -140px; top: -160px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--orange) 26%, transparent), transparent 70%); pointer-events: none; }
+  .start ol { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .start li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .node { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--peach); font-size: 14px; }
+  .start li:first-child .node { background: var(--peach); color: var(--dark); }
+  .start b { display: block; margin-top: 10px; font-family: var(--font-head); font-size: 19px; font-weight: 500; }
+  .start p { margin-top: 6px; color: var(--on-dark-muted); font-size: 15px; line-height: 1.55; }
+  .start-more { display: inline-flex; gap: 8px; margin-top: 28px; font-size: 15px; color: var(--on-dark); }
+  .start-more span { color: var(--peach); }
+
+  .faq { border-top: 1px solid var(--line-2); }
+  .faq details { border-bottom: 1px solid var(--line-2); }
+  .faq summary { list-style: none; display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 24px 0; font-size: 18px; font-weight: 500; cursor: pointer; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary i { flex: none; position: relative; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line-2); }
+  .faq summary i::before, .faq summary i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 11px; height: 1.5px; background: currentColor; transform: translate(-50%, -50%); }
+  .faq summary i::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform .3s; }
+  .faq details[open] summary i::after { transform: translate(-50%, -50%) rotate(0); }
+  .faq details p { padding: 0 48px 24px 0; color: var(--muted); line-height: 1.65; }
+
+  .cta { display: flex; justify-content: space-between; align-items: center; gap: 24px 48px; flex-wrap: wrap; padding: clamp(28px, 4vw, 52px); border-radius: 32px; background: var(--accent-soft); }
+  .cta h2 { max-width: 640px; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.2; }
+  .cta-btns { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .cta-demo { font-size: 15px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+
+  .others { margin-top: clamp(40px, 5vw, 64px); }
+  .others h3 { font-size: 20px; margin-bottom: 12px; }
+  .others ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 24px; }
+  .others a { display: flex; justify-content: space-between; gap: 12px; padding: 16px 2px; border-top: 1px solid var(--line-2); font-size: 16px; transition: color .2s; }
+  .others a span { color: var(--accent); }
+  .others a:hover { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .start ol { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 680px) {
+    .vars { grid-template-columns: 1fr; }
+    .vars li { padding: 24px 22px; }
+    .faq details p { padding-right: 0; }
+  }
+</style>

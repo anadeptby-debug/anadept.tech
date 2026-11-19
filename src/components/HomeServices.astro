@@ -2,6 +2,7 @@
 import type { Dict, Lang } from '../i18n/content';
 import { lurl } from '../lib/url';
 import HomeHead from './HomeHead.astro';
+import { services as details } from '../i18n/services';
 const { t, lang } = Astro.props as { t: Dict; lang: Lang };
 const h = t.home.services;
 const href = lurl(lang, '/services/');
@@ -11,7 +12,7 @@ const href = lurl(lang, '/services/');
     <HomeHead eyebrow={h.eyebrow} title={h.title} lead={h.lead} href={href} more={h.more} />
     <div class="grid">
       {t.services.items.map((it, i) => (
-        <a href={href} class="svc reveal" style={`transition-delay:${(i % 3) * 70}ms`} data-cursor={t.home.more}>
+        <a href={lurl(lang, `/services/${details[lang][i].slug}/`)} class="svc reveal" style={`transition-delay:${(i % 3) * 70}ms`} data-cursor={t.home.more}>
           <span class="n">{String(i + 1).padStart(2, '0')}</span>
           <h3>{it.t}</h3>
           <p>{it.d}</p>
