@@ -6,9 +6,8 @@ const f = t.faq;
 <section class="faq" id="faq">
   <div class="wrap faq-grid">
     <div class="sec-head reveal">
-      <span class="eyebrow">{f.eyebrow}</span>
       <h2>{title ?? f.title}</h2>
-      {more && <a class="more-link" href={more.href}>{more.label}<span class="arr" aria-hidden="true">→</span></a>}
+      {more && <a class="more-link" href={more.href}>{more.label}</a>}
     </div>
     <div class="list">
       {f.items.slice(0, limit ?? f.items.length).map((it) => (
@@ -39,6 +38,7 @@ const f = t.faq;
   details[open] summary i::after { transform: translate(-50%, -50%) rotate(0); }
   .a { padding: 0 56px 32px 0; color: var(--muted); line-height: 1.65; max-width: 640px; }
   details[open] .a { animation: open .4s var(--ease); }
+  @media (prefers-reduced-motion: reduce) { details[open] .a { animation: none; } summary i, summary i::after { transition: none; } }
   @keyframes open { from { opacity: 0; transform: translateY(-6px); } }
   @media (max-width: 920px) { .faq-grid { grid-template-columns: 1fr; } .a { padding-right: 0; } }
 </style>

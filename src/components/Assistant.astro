@@ -153,14 +153,13 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
     position: fixed; z-index: 60; bottom: var(--gap);
     left: 50%; transform: translateX(-50%); width: min(440px, calc(100% - 24px));
   }
-  .asst.ready { transition: left .45s var(--ease), width .45s var(--ease), transform .45s var(--ease); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* Окно (в режиме строки — просто карточка со строкой ввода) */
   .a-win {
     display: flex; flex-direction: column; padding: 5px;
-    background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 22px;
-    box-shadow: 0 2px 6px rgba(18,23,34,.06), 0 18px 48px -16px rgba(18,23,34,.35);
+    background: var(--milk); color: var(--ink); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: var(--shadow-float);
   }
   .a-head, .a-log, .a-note { display: none; }
 
@@ -180,7 +179,7 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
   .a-launch { display: none; }
   [data-mode="mini"] .a-launch {
     position: relative; display: grid; place-items: center; width: 56px; height: 56px; border: 0; border-radius: 50%;
-    background: var(--dark); cursor: pointer; box-shadow: 0 14px 34px -10px rgba(18,23,34,.55); transition: transform .25s var(--ease);
+    background: var(--dark); cursor: pointer; box-shadow: var(--shadow-launch); transition: transform .25s var(--ease);
   }
   .a-launch:hover { transform: scale(1.06); }
   .a-dot { position: absolute; top: 4px; right: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--peach); border: 2px solid var(--dark); display: none; }
@@ -201,7 +200,7 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
   .a-log :global(.a-msg.err) { background: var(--accent-soft); color: color-mix(in oklab, var(--accent) 70%, var(--ink)); }
   .a-log :global(.a-msg p + p), .a-log :global(.a-msg p + ul), .a-log :global(.a-msg ul + p) { margin-top: 6px; }
   .a-log :global(.a-msg ul) { margin: 4px 0 0; padding-left: 18px; }
-  .a-log :global(.a-msg a) { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .a-log :global(.a-msg a) { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
   .a-log :global(.a-msg.typing) { display: inline-flex; gap: 4px; padding: 13px 15px; }
   .a-log :global(.a-msg.typing span) { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); animation: dot 1s infinite; }
   .a-log :global(.a-msg.typing span:nth-child(2)) { animation-delay: .15s; }
@@ -212,12 +211,13 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
   /* Подсказки: в режиме строки — только когда поле в фокусе */
   .a-chips { display: none; flex-wrap: wrap; gap: 6px; padding: 4px 4px 8px; }
   [data-mode="bar"] .a-win:focus-within .a-chips { display: flex; }
-  .a-chip { padding: 5px 11px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; font-size: 12.5px; color: var(--ink-2); cursor: pointer; transition: border-color .2s, color .2s; }
+  .a-chip { padding: 5px 11px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--milk); font-size: 13px; color: var(--ink-2); cursor: pointer; transition: border-color .2s, color .2s; }
   .a-chip:hover { border-color: var(--ink); color: var(--ink); }
 
   /* Строка ввода */
-  .a-bar { display: flex; align-items: center; gap: 8px; padding: 3px 3px 3px 4px; border-radius: 17px; background: var(--paper); border: 1px solid var(--line); transition: border-color .2s, background .2s; }
-  .a-bar:focus-within { border-color: var(--line-2); background: #fff; }
+  .a-bar { display: flex; align-items: center; gap: 8px; padding: 3px 3px 3px 4px; border-radius: 17px; background: var(--paper); border: 1px solid var(--field-edge); transition: border-color .2s, background .2s; }
+  .a-bar:focus-within { border-color: var(--ink-2); background: var(--milk); }
+  .a-bar:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .a-ava { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--dark); }
   .a-ava.sm { width: 24px; height: 24px; }
   .a-ava img, .a-launch img { display: block; height: auto; transform: translateY(-1px); }
@@ -225,7 +225,8 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
   .a-bar input::placeholder { color: var(--faint); }
   .a-send { flex: none; position: relative; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--peach); cursor: pointer; transition: background .2s, opacity .2s; }
   .a-send:hover { background: var(--peach-hover); }
-  .a-send:disabled { opacity: .5; cursor: default; }
+  .a-send:disabled { background: var(--milk-2); cursor: not-allowed; }
+  .a-send:disabled i, .a-send:disabled i::after { background: var(--faint); border-color: var(--faint); }
   .a-send i { position: absolute; left: 50%; top: 50%; width: 2px; height: 13px; background: var(--dark); transform: translate(-50%, -40%); }
   .a-send i::after { content: ''; position: absolute; left: 50%; top: -1px; width: 7px; height: 7px; border: solid var(--dark); border-width: 2px 0 0 2px; transform: translateX(-50%) rotate(45deg); }
 
@@ -236,5 +237,5 @@ const icon = url('/brand/mark-white.png'); // белый знак на проз�
     [data-mode="chat"] .a-win { height: min(560px, calc(100dvh - 90px)); }
     .a-bar input { font-size: 16px; } /* без автозума на iPhone */
   }
-  @media (prefers-reduced-motion: reduce) { .asst.ready { transition: none; } .ready[data-mode="chat"] .a-win { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .ready[data-mode="chat"] .a-win, .a-log :global(.a-msg.typing span) { animation: none; } .a-launch:hover { transform: none; } }
 </style>

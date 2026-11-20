@@ -73,11 +73,11 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
         <div class="rel">
           {related.map((c) => (
             <a class="rel-card reveal" href={lurl(lang, `/cases/${c.slug}/`)}>
-              <span class="rel-tag">{c.tag}</span>
+              <span class="rel-tag">{c.tag.split(' · ').join(', ')}</span>
               <b>{c.card.title}</b>
               <span class="rel-txt">{c.card.text}</span>
               <span class="rel-figs">{c.card.figures.slice(0, 2).map((f) => <span><em>{f.v}</em> {f.l}</span>)}</span>
-              <span class="rel-more">{L.more}<span aria-hidden="true">→</span></span>
+              <span class="rel-more">{L.more}</span>
             </a>
           ))}
         </div>
@@ -92,7 +92,7 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
         <ol>
           {L.start.map((st, k) => <li><span class="node">{k + 1}</span><div><b>{st.t}</b><p>{st.d}</p></div></li>)}
         </ol>
-        <a class="start-more" href={lurl(lang, '/process/')}>{L.startMore}<span aria-hidden="true">→</span></a>
+        <a class="start-more" href={lurl(lang, '/process/')}>{L.startMore}</a>
       </div>
     </div>
   </section>
@@ -116,7 +116,7 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
       <div class="cta reveal">
         <h2>{L.cta.title}</h2>
         <div class="cta-btns">
-          <a class="btn" href={lurl(lang, '/contact/')}>{L.cta.btn}<span class="arr">→</span></a>
+          <a class="btn" href={lurl(lang, '/contact/')}>{L.cta.btn}</a>
           <a class="cta-demo" href={lurl(lang, '/demo/')}>{L.cta.demo}</a>
         </div>
       </div>
@@ -124,7 +124,7 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
       <nav class="others" aria-label={L.others}>
         <h3>{L.others}</h3>
         <ul>
-          {others.map((o) => <li><a href={lurl(lang, `/services/${o.slug}/`)}>{o.name}<span aria-hidden="true">→</span></a></li>)}
+          {others.map((o) => <li><a href={lurl(lang, `/services/${o.slug}/`)}>{o.name}</a></li>)}
         </ul>
       </nav>
     </div>
@@ -143,14 +143,14 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
   .vars { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .vars li { display: grid; align-content: start; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 30px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); }
   .vars li:last-child:nth-child(odd) { grid-column: 1 / -1; } /* нечётный последний — на всю ширину */
-  .vars .n { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .vars .n { font-size: 13px; font-weight: 600; color: var(--accent-text); }
   .vars h3 { font-size: clamp(20px, 1.9vw, 25px); }
   .vars p { color: var(--muted); font-size: 15.5px; line-height: 1.6; }
   /* Варианты по разделам */
   .g-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
   .g-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--milk-2); font-size: 14px; transition: background .2s, color .2s; }
   .g-nav a:hover { background: var(--dark); color: var(--on-dark); }
-  .g-nav span { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .g-nav span { font-size: 12px; color: var(--accent-text); font-weight: 600; }
   .grp { scroll-margin-top: 90px; margin-top: clamp(32px, 4vw, 48px); }
   .g-title { font-size: clamp(20px, 2vw, 24px); padding-bottom: 12px; border-bottom: 1px solid var(--line-2); }
   .vars.compact { margin-top: 16px; grid-template-columns: repeat(3, 1fr); }
@@ -162,19 +162,18 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
   .vars.compact h4 { margin: 0; font-family: var(--font-head); font-size: 19px; font-weight: 500; letter-spacing: -.02em; line-height: 1.25; }
   .vars.compact p { font-size: 15px; }
   .get { display: grid; gap: 4px; margin-top: 6px; padding-top: 14px; border-top: 1px dashed var(--line-2); font-size: 15px; font-weight: 500; }
-  .get span { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+  .get span { font-size: 13px; font-weight: 600; color: var(--accent-text); }
 
   .rel { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 32px; }
   .rel-card { display: grid; gap: 10px; padding: 28px; border-radius: var(--radius); background: var(--paper); border: 1px solid var(--line); transition: transform .4s var(--ease), box-shadow .4s, border-color .3s; }
   .rel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-2); }
-  .rel-tag { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+  .rel-tag { font-size: 14px; font-weight: 500; color: var(--accent-text); }
   .rel-card b { font-family: var(--font-head); font-size: 22px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
   .rel-txt { color: var(--muted); font-size: 15px; line-height: 1.55; }
   .rel-figs { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
-  .rel-figs em { font-style: normal; font-weight: 600; color: var(--accent); }
-  .rel-more { display: inline-flex; gap: 8px; font-size: 14px; font-weight: 500; }
-  .rel-more span { color: var(--accent); transition: transform .3s var(--ease); }
-  .rel-card:hover .rel-more span { transform: translateX(3px); }
+  .rel-figs em { font-style: normal; font-weight: 600; color: var(--accent-text); }
+  .rel-more { display: inline-flex; gap: 8px; font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+  .rel-card:hover .rel-more { text-decoration-color: currentColor; }
 
   .start { position: relative; overflow: hidden; padding: clamp(28px, 4vw, 52px); border-radius: 32px; background: var(--dark); color: var(--on-dark); }
   .start::before { content: ''; position: absolute; right: -140px; top: -160px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--orange) 26%, transparent), transparent 70%); pointer-events: none; }
@@ -184,8 +183,7 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
   .start li:first-child .node { background: var(--peach); color: var(--dark); }
   .start b { display: block; margin-top: 10px; font-family: var(--font-head); font-size: 19px; font-weight: 500; }
   .start p { margin-top: 6px; color: var(--on-dark-muted); font-size: 15px; line-height: 1.55; }
-  .start-more { display: inline-flex; gap: 8px; margin-top: 28px; font-size: 15px; color: var(--on-dark); }
-  .start-more span { color: var(--peach); }
+  .start-more { display: inline-flex; gap: 8px; margin-top: 28px; font-size: 15px; color: var(--on-dark); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--peach); }
 
   .faq { border-top: 1px solid var(--line-2); }
   .faq details { border-bottom: 1px solid var(--line-2); }
@@ -206,9 +204,9 @@ const others = services[lang].map((x, k) => ({ ...x, name: t.services.items[k].t
   .others h3 { font-size: 20px; margin-bottom: 12px; }
   .others ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 24px; }
   .others a { display: flex; justify-content: space-between; gap: 12px; padding: 16px 2px; border-top: 1px solid var(--line-2); font-size: 16px; transition: color .2s; }
-  .others a span { color: var(--accent); }
-  .others a:hover { color: var(--accent); }
+  .others a:hover { color: var(--accent-text); }
 
+  @media (prefers-reduced-motion: reduce) { .rel-card { transition: none; } .rel-card:hover { transform: none; } }
   @media (max-width: 1000px) {
     .vars.compact { grid-template-columns: repeat(2, 1fr); }
     .vars.compact li:nth-child(3):last-child, .vars.compact li:nth-child(5):last-child { grid-column: 1 / -1; } /* нечётный последний — на всю ширину */

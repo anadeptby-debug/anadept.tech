@@ -50,7 +50,7 @@ const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает �
   /* Тёмная шапка как в макете: поверх hero прозрачная, при прокрутке — плотная */
   .hdr { position: fixed; top: 0; left: 0; right: 0; z-index: 40; color: var(--on-dark); transition: background .3s, box-shadow .3s; }
   .hdr.scrolled, .hdr.open { background: color-mix(in oklab, var(--dark) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--on-dark-line); }
-  .hdr-in { display: flex; align-items: center; gap: 28px; height: 96px; transition: height .3s; }
+  .hdr-in { display: flex; align-items: center; gap: 28px; height: 96px; }
   .scrolled .hdr-in { height: 72px; }
   .logo { margin-right: auto; display: inline-flex; flex: none; }
   .logo img { display: block; height: 25px; width: auto; }
@@ -60,14 +60,15 @@ const section = page.split('/')[0]; // /cases/<slug>/ подсвечивает �
   .hdr-r { display: flex; align-items: center; gap: 18px; }
   .lang { font-size: 13px; color: var(--on-dark-muted); }
   .lang:hover { color: var(--on-dark); }
-  .hdr-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 24px; border-radius: 999px; border: 1px solid #c7cad3; font-size: 14px; font-weight: 500; white-space: nowrap; transition: background .16s; }
-  .hdr-cta:hover { background: #ffffff15; }
+  .hdr-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--on-dark-soft); font-size: 14px; font-weight: 500; white-space: nowrap; transition: background .16s; }
+  .hdr-cta:hover { background: var(--on-dark-hover); }
 
-  .burger { display: none; width: 42px; height: 42px; border-radius: 999px; border: 1px solid #c7cad3; background: transparent; cursor: pointer; position: relative; }
-  .burger i { position: absolute; left: 12px; right: 12px; height: 1.5px; background: var(--on-dark); transition: transform .3s var(--ease), top .3s var(--ease); }
-  .burger i:first-child { top: 16px; } .burger i:last-child { top: 24px; }
-  .open .burger i:first-child { top: 20px; transform: rotate(45deg); }
-  .open .burger i:last-child { top: 20px; transform: rotate(-45deg); }
+  .burger { display: none; width: 42px; height: 42px; border-radius: 999px; border: 1px solid var(--on-dark-soft); background: transparent; cursor: pointer; position: relative; }
+  .burger i { position: absolute; left: 12px; right: 12px; height: 1.5px; top: 20px; background: var(--on-dark); transition: transform .3s var(--ease); }
+  .burger i:first-child { transform: translateY(-4px); } .burger i:last-child { transform: translateY(4px); }
+  .open .burger i:first-child { transform: rotate(45deg); }
+  .open .burger i:last-child { transform: rotate(-45deg); }
+  @media (prefers-reduced-motion: reduce) { .burger i, .m-nav { transition: none; } }
 
   .m-nav { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
   .m-nav > div { overflow: hidden; display: grid; width: 100%; min-height: 0; }

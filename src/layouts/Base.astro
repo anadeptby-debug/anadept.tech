@@ -12,6 +12,8 @@ const alt = lurl(lang === 'ru' ? 'en' : 'ru', path);
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Анимации появления прячут контент только при работающем JS -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
   <meta name="theme-color" content="#121722" />
   <title>{title}</title>
   <meta name="description" content={t.meta.description} />

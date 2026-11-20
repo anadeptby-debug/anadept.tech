@@ -11,9 +11,8 @@ const rid = `case-more-${c.slug}`;
 <article class="cc reveal" style={`transition-delay:${i * 80}ms`} data-href={href}>
   <div class="cc-main">
     <div class="cc-txt">
-      <span class="cc-tag">{L.case} {String(i + 1).padStart(2, '0')} · {c.tag}</span>
       <h3><a href={href}>{c.card.title}</a></h3>
-      <p class="cc-meta">{c.meta.join(' · ')}</p>
+      <p class="cc-meta">{c.meta.join(', ')}</p>
       <p class="cc-lead">{c.card.text}</p>
     </div>
     <ul class="cc-figs">
@@ -35,7 +34,7 @@ const rid = `case-more-${c.slug}`;
     <button type="button" class="cc-toggle" aria-expanded="false" aria-controls={rid} data-open={L.collapse} data-closed={L.expand}>
       <span class="lbl">{L.expand}</span><i aria-hidden="true"></i>
     </button>
-    <a class="btn dark" href={href}>{L.read}<span class="arr">→</span></a>
+    <a class="btn dark" href={href}>{L.read}</a>
   </div>
 </article>
 
@@ -60,14 +59,13 @@ const rid = `case-more-${c.slug}`;
   .cc:hover { box-shadow: var(--shadow); border-color: var(--line-2); }
   .cc-main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
   .cc-txt { display: grid; gap: 14px; justify-items: start; }
-  .cc-tag { font-size: 13px; font-weight: 500; letter-spacing: .055em; text-transform: uppercase; color: var(--accent); }
   .cc h3 { font-size: clamp(26px, 2.8vw, 38px); line-height: 1.1; letter-spacing: -.035em; }
-  .cc h3 a:hover { color: var(--accent); }
+  .cc h3 a:hover { color: var(--accent-text); }
   .cc-meta { font-size: 14px; color: var(--muted); }
   .cc-lead { color: var(--ink-2); line-height: 1.6; max-width: 560px; }
 
-  .cc-figs { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line-2); }
-  .cc-figs li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .cc-figs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 16px; border-top: 1px solid var(--line-2); }
+  .cc-figs li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--line); }
   .cc-figs b { min-width: 3.6em; font-family: var(--font-head); font-size: clamp(24px, 2.4vw, 32px); font-weight: 500; letter-spacing: -.045em; line-height: 1; color: var(--accent); white-space: nowrap; }
   .cc-figs span { font-size: 14px; color: var(--muted); line-height: 1.4; }
 
@@ -79,7 +77,7 @@ const rid = `case-more-${c.slug}`;
   .mini li { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; align-items: baseline; }
   .mini .k { font-weight: 600; }
   .mini .a { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent); }
-  .mini .b::before { content: '→ '; color: var(--accent); }
+  .mini .b::before { content: '→ '; color: var(--accent-text); }
 
   .cc-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; margin-top: 28px; }
   .cc-toggle { display: inline-flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 6px 0 22px; border: 0; border-radius: 999px; background: var(--milk); box-shadow: inset 0 0 0 1px var(--line-2); font-size: 15px; font-weight: 500; cursor: pointer; transition: box-shadow .2s; }
@@ -90,6 +88,7 @@ const rid = `case-more-${c.slug}`;
   .open .cc-toggle i { background: var(--ink); color: var(--milk); }
   .open .cc-toggle i::after { transform: translate(-50%, -50%) rotate(0); }
 
+  @media (prefers-reduced-motion: reduce) { .cc-more, .cc-toggle i::after { transition: none; } }
   @media (max-width: 860px) { .cc-main { grid-template-columns: 1fr; } }
   @media (max-width: 600px) {
     .mini li { grid-template-columns: 1fr; gap: 2px; }

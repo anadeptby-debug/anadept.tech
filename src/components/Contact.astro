@@ -8,7 +8,6 @@ const c = t.contact;
     <div class="box">
       <div class="glow" aria-hidden="true"></div>
       <div class="c-txt reveal">
-        <span class="eyebrow">{c.eyebrow}</span>
         <h2>{title ?? c.title}</h2>
         <p class="alt">{c.alt}: <a href="https://t.me/anadept" data-cursor="Telegram">@anadept</a> · <a href="mailto:hello@anadept.by" data-cursor="Email">hello@anadept.by</a></p>
       </div>
@@ -16,7 +15,7 @@ const c = t.contact;
         <label><span>{c.name}</span><input name="name" required autocomplete="name" /></label>
         <label><span>{c.contact}</span><input name="contact" required /></label>
         <label class="full"><span>{c.process}</span><textarea name="process" rows="2"></textarea></label>
-        <button class="btn accent full" type="submit" data-magnetic>{c.send}<span class="arr">→</span></button>
+        <button class="btn accent full" type="submit" data-magnetic>{c.send}</button>
         <p class="consent full">{c.consent}</p>
       </form>
     </div>
@@ -46,20 +45,20 @@ const c = t.contact;
   }
   .glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(520px circle at var(--mx) var(--my), color-mix(in oklab, var(--peach) 28%, transparent), transparent 60%); }
   .c-txt { position: relative; display: grid; gap: 24px; align-content: start; }
-  .c-txt .eyebrow { color: #c7cad3; }
   .c-txt h2 { font-size: clamp(30px, 3.4vw, 46px); }
   .alt { color: var(--on-dark-muted); font-size: 15px; }
-  .alt a { color: var(--on-dark); border-bottom: 1px solid #555c6b; }
+  .alt a { color: var(--on-dark); border-bottom: 1px solid var(--on-dark-rule); }
   .form { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: start; }
   .form label { display: grid; gap: 6px; font-size: 13px; color: var(--on-dark-muted); }
   .full { grid-column: 1 / -1; }
   .form input, .form textarea {
-    width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--on-dark-line); background: #1a2030;
-    color: var(--on-dark); font-size: 16px; outline: none; transition: border-color .2s; resize: vertical;
+    width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--field-edge-dark); background: var(--dark-2);
+    color: var(--on-dark); font-size: 16px; transition: border-color .2s; resize: vertical;
   }
-  .form input:focus, .form textarea:focus { border-color: var(--peach); }
-  .form .btn { justify-content: center; padding: 18px; }
-  .consent { font-size: 12px; color: #7c8291; }
+  .form input:hover, .form textarea:hover { border-color: var(--on-dark-soft); }
+  .form input:focus-visible, .form textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .form .btn { justify-content: center; }
+  .consent { font-size: 13px; color: var(--on-dark-faint); }
   .form :global(.ok) { font-size: 22px; grid-column: 1 / -1; }
   @media (max-width: 860px) { .box { grid-template-columns: 1fr; border-radius: 36px; } }
   @media (max-width: 480px) { .form { grid-template-columns: 1fr; } }

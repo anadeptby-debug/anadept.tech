@@ -16,11 +16,10 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
     {!bare && (
       <div class="a-head reveal">
         <div class="sec-head">
-          <span class="eyebrow">{a.eyebrow}</span>
           <h2 set:html={a.title} />
           <p class="lead">{a.lead}</p>
         </div>
-        {more && <a class="more-link" href={more.href}>{more.label}<span class="arr" aria-hidden="true">→</span></a>}
+        {more && <a class="more-link" href={more.href}>{more.label}</a>}
       </div>
     )}
 
@@ -36,7 +35,7 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
           </fieldset>
         ))}
         <div class="go">
-          <button class="btn dark" type="submit">{a.submit}<span class="arr">→</span></button>
+          <button class="btn dark" type="submit">{a.submit}</button>
           <p class="privacy">{a.privacy}</p>
           <p class="err" role="alert"></p>
         </div>
@@ -61,7 +60,7 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
           </dl>
         </div>
 
-        <a href={lurl(lang, '/contact/')} class="btn" data-magnetic>{a.cta}<span class="arr">→</span></a>
+        <a href={lurl(lang, '/contact/')} class="btn" data-magnetic>{a.cta}</a>
         <p class="disc">{a.disclaimer}</p>
       </article>
     </div>
@@ -154,32 +153,32 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
   .qn { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--dark); color: var(--milk); font-size: 12px; flex: none; }
   textarea {
     clear: both; width: 100%; resize: vertical; min-height: 56px; padding: 14px 16px; border-radius: var(--radius-s);
-    border: 1px solid var(--line-2); background: var(--milk); font-size: 15px; line-height: 1.5; transition: border-color .2s, box-shadow .2s;
+    border: 1px solid var(--field-edge); background: var(--milk); font-size: 15px; line-height: 1.5; transition: border-color .2s;
   }
   textarea::placeholder { color: var(--faint); }
-  textarea:hover { border-color: var(--muted); }
-  textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px var(--accent-soft); }
+  textarea:hover { border-color: var(--ink-2); }
+  textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .hint {
-    display: inline-flex; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--milk);
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--milk);
     font-size: 13px; cursor: pointer; transition: border-color .2s, background .2s, color .2s;
   }
-  .hint::before { content: '+'; margin-right: 6px; color: var(--accent); }
+  .hint::before { content: '+'; margin-right: 6px; color: var(--accent-text); }
   .hint:hover { border-color: var(--ink); }
   .hint[aria-pressed="true"] { background: var(--dark); color: var(--on-dark); border-color: var(--dark); }
   .hint[aria-pressed="true"]::before { content: '✓'; color: var(--peach); }
   .go { display: grid; gap: 12px; justify-items: start; padding-top: 24px; border-top: 1px solid var(--line-2); }
-  .go .btn[disabled] { opacity: .55; cursor: progress; }
+  .go .btn[disabled] { background: var(--milk-2); color: var(--muted); cursor: progress; }
   .privacy { font-size: 13px; color: var(--muted); }
-  .err { font-size: 14px; color: #c0392b; min-height: 1em; }
+  .err { font-size: 14px; color: var(--danger); min-height: 1em; }
   .err:empty { display: none; }
 
   .proto {
     position: sticky; top: 96px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 36px 34px 32px; display: grid; gap: 20px; justify-items: start; box-shadow: var(--shadow);
   }
-  .p-head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); font-size: 12px; letter-spacing: .055em; text-transform: uppercase; }
-  .stamp { color: var(--accent); font-size: 11px; }
+  .p-head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); font-size: 14px; color: var(--muted); }
+  .stamp { color: var(--accent-text); font-size: 13px; }
 
   .idle-txt, .loading-txt, .result { display: none; width: 100%; }
   [data-state="idle"] .idle-txt { display: block; color: var(--muted); font-size: 15px; padding: 28px 0; }
@@ -190,18 +189,18 @@ const api = import.meta.env.PUBLIC_AUDIT_API || (import.meta.env.DEV ? 'http://l
   @keyframes ink { from { opacity: 0; transform: translateY(6px); } }
 
   .hours { width: 100%; display: flex; justify-content: space-between; align-items: baseline; }
-  .lbl { font-size: 12px; text-transform: uppercase; color: var(--muted); }
+  .lbl { font-size: 14px; color: var(--muted); }
   .hours b { font-family: var(--font-head); font-size: 48px; font-weight: 500; letter-spacing: -0.05em; color: var(--accent); line-height: 1; }
   .off .hours { display: none; }
   dl { margin: 0; width: 100%; display: grid; grid-template-columns: 130px 1fr; }
   dt, dd { padding: 14px 0; border-top: 1px dashed var(--line-2); margin: 0; }
-  dt { font-family: var(--mono); font-size: 12px; text-transform: uppercase; color: var(--muted); padding-right: 12px; }
+  dt { font-family: var(--font); font-size: 14px; color: var(--muted); padding-right: 12px; }
   dd { font-size: 15px; }
   dd.muted { color: var(--muted); font-size: 14px; }
   dd ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
-  dd li::before { content: '— '; color: var(--accent); }
-  .disc { font-size: 12px; color: var(--faint); }
-  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2s; } }
+  dd li::before { content: '— '; color: var(--accent-text); }
+  .disc { font-size: 13px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2s; } [data-state="done"] .result { animation: none; } }
   @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } .proto { position: relative; top: 0; scroll-margin-top: 90px; } }
   @media (max-width: 480px) { dl { grid-template-columns: 1fr; } dd { border-top: 0; padding-top: 0; } }
 </style>

@@ -42,13 +42,12 @@ const w = t.services.work;
   }
   .node {
     display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%;
-    border: 1px solid var(--on-dark-line); background: #1a2030; font-size: 15px; color: var(--on-dark-muted);
+    border: 1px solid var(--on-dark-line); background: var(--dark-2); font-size: 15px; color: var(--on-dark-muted);
     transition: background .4s, color .4s, border-color .4s; transition-delay: var(--d);
   }
   .t { font-family: var(--font-head); font-size: clamp(20px, 2vw, 26px); font-weight: 500; letter-spacing: -.03em; line-height: 1.15; }
-  .path li { opacity: 0; transform: translateX(16px); transition: opacity .6s var(--ease) var(--d), transform .6s var(--ease) var(--d); }
+  .path li { transition: opacity .6s var(--ease) var(--d), transform .6s var(--ease) var(--d); } /* скрытое состояние — в global.css под .js */
 
-  .path.in li { opacity: 1; transform: none; }
   .path.in li::after { transform: scaleY(1); }
   .path.in .node { border-color: var(--peach); color: var(--on-dark); }
   .path.in .last .node { background: var(--peach); color: var(--dark); }

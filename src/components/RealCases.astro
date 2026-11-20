@@ -7,7 +7,7 @@ const { lang } = Astro.props as { lang: Lang };
 <section class="real" id="projects">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">{caseLabels[lang].realTitle}</span>
+      <h2>{caseLabels[lang].realTitle}</h2>
     </div>
     <div class="list">
       {cases[lang].map((c, i) => <CaseCard c={c} lang={lang} i={i} />)}
@@ -17,5 +17,6 @@ const { lang } = Astro.props as { lang: Lang };
 
 <style>
   .real .sec-head { margin-bottom: 24px; }
+  .real h2 { overflow-wrap: break-word; min-width: 0; }
   .list { display: grid; gap: 20px; }
 </style>
