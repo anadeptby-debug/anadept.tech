@@ -1,11 +1,13 @@
-// Cloudflare Worker: отдаёт статический сайт (dist) и отвечает конструктору на /api/audit.
+// Cloudflare Worker: отдаёт статический сайт (dist), отвечает конструктору на /api/audit,
+// помощнику на /api/chat и принимает заявки на /api/contact (уходят в Telegram).
 // ИИ: сначала Gemini (если задан секрет GEMINI_API_KEY), при ошибке или без ключа — Cloudflare Workers AI
 // (привязка AI в wrangler.jsonc, ключ не нужен). Ключи живут только здесь, в браузер не попадают.
 import { SYSTEM_PROMPT, RESPONSE_SCHEMA, JSON_SCHEMA, userMessage } from './prompt.js';
 import { handleChat, chatMock } from './chat.js';
+import { parseContact, leadMessage, sendToTelegram } from './contact.js';
 
 const MAX_LEN = 600;              // символов на одно поле
-const LIMITS = { audit: 8, chat: 30 }; // запросов с одного IP…
+const LIMITS = { audit: 8, chat: 30, contact: 5 }; // запросов с одного IP…
 const WINDOW_MS = 10 * 60 * 1000;     // …за 10 минут
 const hits = new Map();           // простой лимит в памяти инстанса (защита от случайного спама)
 
@@ -17,7 +19,8 @@ export default {
 
     const cors = corsHeaders(req, env);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    const route = pathname === '/api/audit' ? 'audit' : pathname === '/api/chat' ? 'chat' : null;
+    const routes = { '/api/audit': 'audit', '/api/chat': 'chat', '/api/contact': 'contact' };
+    const route = routes[pathname] || null;
     if (req.method !== 'POST' || !route) return json({ error: 'not_found' }, 404, cors);
     if (!cors['Access-Control-Allow-Origin']) return json({ error: 'forbidden' }, 403, cors);
 
@@ -27,6 +30,26 @@ export default {
     let body;
     try { body = await req.json(); } catch { return json({ error: 'bad_request' }, 400, cors); }
     const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname);
+
+    if (route === 'contact') {
+      const { lead, bot, valid } = parseContact(body);
+      if (bot) return json({ ok: true }, 200, cors); // ловушка сработала: боту отвечаем «ок», в Telegram не шлём
+      if (!valid) return json({ error: 'empty' }, 400, cors);
+      const text = leadMessage(lead);
+      if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+        // Локально без секретов заявка печатается в консоль wrangler; на боевом домене — честная ошибка
+        if (isLocal) { console.log(`[contact:mock]\n${text}`); return json({ ok: true, via: 'mock' }, 200, cors); }
+        console.error('[contact] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID не заданы');
+        return json({ error: 'not_configured' }, 503, cors);
+      }
+      try {
+        await sendToTelegram(text, env);
+        return json({ ok: true }, 200, cors);
+      } catch (e) {
+        console.error('[contact]', e.message || e);
+        return json({ error: 'send_failed' }, 502, cors);
+      }
+    }
 
     if (route === 'chat') {
       try {

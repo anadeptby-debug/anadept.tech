@@ -198,7 +198,9 @@ const ru = {
     process: 'Какой процесс (необязательно)',
     send: 'Записаться бесплатно',
     consent: 'Нажимая кнопку, вы соглашаетесь на обработку персональных данных.',
-    ok: 'Спасибо! Напишем в течение рабочего дня.',
+    ok: 'Спасибо! Заявка у нас, напишем в течение рабочего дня.',
+    sending: 'Отправляем…',
+    errors: { rate_limited: 'Слишком много заявок подряд. Попробуйте через несколько минут или напишите нам напрямую.', generic: 'Не получилось отправить заявку. Напишите нам напрямую — ответим так же быстро:' },
     alt: 'Или напишите напрямую',
   },
   assistant: {
@@ -414,7 +416,9 @@ const en: Dict = {
     process: 'Which process (optional)',
     send: 'Book for free',
     consent: 'By submitting you agree to the processing of personal data.',
-    ok: 'Thank you! We’ll reply within one business day.',
+    ok: 'Thank you! We’ve got your request and will reply within one business day.',
+    sending: 'Sending…',
+    errors: { rate_limited: 'Too many requests in a row. Try again in a few minutes or write to us directly.', generic: 'Couldn’t send your request. Please write to us directly — we’ll reply just as fast:' },
     alt: 'Or write directly',
   },
   assistant: {

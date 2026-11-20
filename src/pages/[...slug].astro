@@ -53,7 +53,7 @@ const sl = serviceLabels[lang];
       <HomeSteps t={t} lang={lang} />
       <HomeWhy t={t} lang={lang} />
       <Faq t={t} limit={4} title={t.home.faq.title} more={{ href: lurl(lang, '/about/#faq'), label: t.home.faq.more }} />
-      <Contact t={t} title={t.home.contact.title} />
+      <Contact t={t} lang={lang} title={t.home.contact.title} />
     </>
   )}
 
@@ -83,5 +83,5 @@ const sl = serviceLabels[lang];
   {svc && <ServiceDetail t={t} lang={lang} i={si} />}
   {page === 'process' && <How t={t} lang={lang} />}
   {page === 'about' && (<><Trust t={t} /><Faq t={t} /></>)}
-  {page === 'contact' && <Contact t={t} />}
+  {page === 'contact' && <Contact t={t} lang={lang} />}
 </Page>

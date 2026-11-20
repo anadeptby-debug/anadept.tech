@@ -1,7 +1,10 @@
 ---
-import type { Dict } from '../i18n/content';
-const { t, title } = Astro.props as { t: Dict; title?: string };
+import type { Dict, Lang } from '../i18n/content';
+import { url } from '../lib/url';
+const { t, lang = 'ru', title } = Astro.props as { t: Dict; lang?: Lang; title?: string };
 const c = t.contact;
+// Заявка уходит в воркер (/api/contact), он пересылает её в Telegram. В astro dev — через локальный wrangler dev на :8787
+const api = import.meta.env.PUBLIC_CONTACT_API || (import.meta.env.DEV ? 'http://localhost:8787/api/contact' : url('/api/contact'));
 ---
 <section class="contact" id="contact">
   <div class="wrap">
@@ -11,11 +14,17 @@ const c = t.contact;
         <h2>{title ?? c.title}</h2>
         <p class="alt">{c.alt}: <a href="https://t.me/anadept" data-cursor="Telegram">@anadept</a> · <a href="mailto:hello@anadept.by" data-cursor="Email">hello@anadept.by</a></p>
       </div>
-      <form class="form reveal" data-ok={c.ok}>
-        <label><span>{c.name}</span><input name="name" required autocomplete="name" /></label>
-        <label><span>{c.contact}</span><input name="contact" required /></label>
-        <label class="full"><span>{c.process}</span><textarea name="process" rows="2"></textarea></label>
+      <form class="form reveal" data-contact={JSON.stringify({ api, lang, ok: c.ok, sending: c.sending, errors: c.errors })}>
+        <label><span>{c.name}</span><input name="name" required maxlength="100" autocomplete="name" /></label>
+        <label><span>{c.contact}</span><input name="contact" required minlength="3" maxlength="150" autocomplete="tel" /></label>
+        <label class="full"><span>{c.process}</span><textarea name="process" rows="2" maxlength="1500"></textarea></label>
+        {/* Ловушка для ботов: людям не видна, бот заполнит — заявка не уйдёт */}
+        <label class="trap" aria-hidden="true"><span>Website</span><input name="website" tabindex="-1" autocomplete="off" /></label>
         <button class="btn accent full" type="submit" data-magnetic>{c.send}</button>
+        <div class="c-err full" role="alert" hidden>
+          <p class="c-err-msg"></p>
+          <p class="c-err-alt"><a href="https://t.me/anadept">Telegram @anadept</a> <a href="mailto:hello@anadept.by">hello@anadept.by</a></p>
+        </div>
         <p class="consent full">{c.consent}</p>
       </form>
     </div>
@@ -23,14 +32,49 @@ const c = t.contact;
 </section>
 
 <script>
-  // TODO: подключить отправку (Telegram-бот / почта). Сейчас только состояние успеха.
-  const form = document.querySelector<HTMLFormElement>('.contact .form')!;
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    form.innerHTML = `<p class="ok">${form.dataset.ok}</p>`;
+  type Cfg = { api: string; lang: string; ok: string; sending: string; errors: Record<string, string> };
+  document.querySelectorAll<HTMLFormElement>('.contact .form').forEach((form) => {
+    const C = JSON.parse(form.dataset.contact!) as Cfg;
+    const btn = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+    const label = btn.textContent!;
+    const err = form.querySelector<HTMLElement>('.c-err')!;
+    const errMsg = err.querySelector<HTMLElement>('.c-err-msg')!;
+    const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).value;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.hidden = true;
+      btn.disabled = true;
+      btn.textContent = C.sending;
+      try {
+        const res = await fetch(C.api, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lang: C.lang, page: location.pathname,
+            name: val('name'), contact: val('contact'), process: val('process'), website: val('website'),
+          }),
+        });
+        const r = await res.json().catch(() => ({}));
+        if (!res.ok || !r.ok) throw new Error(r.error || 'generic');
+        // Успех показываем только после ответа воркера: заявка точно ушла в Telegram
+        const ok = document.createElement('p');
+        ok.className = 'ok';
+        ok.setAttribute('role', 'status');
+        ok.textContent = C.ok;
+        form.replaceChildren(ok);
+      } catch (x) {
+        const code = x instanceof Error ? x.message : '';
+        errMsg.textContent = C.errors[code] || C.errors.generic;
+        err.hidden = false;
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    });
   });
-  const box = document.querySelector<HTMLElement>('.contact .box')!;
-  box.addEventListener('mousemove', (e) => {
+
+  const box = document.querySelector<HTMLElement>('.contact .box');
+  box?.addEventListener('mousemove', (e) => {
     const r = box.getBoundingClientRect();
     box.style.setProperty('--mx', `${e.clientX - r.left}px`);
     box.style.setProperty('--my', `${e.clientY - r.top}px`);
@@ -60,6 +104,12 @@ const c = t.contact;
   .form .btn { justify-content: center; }
   .consent { font-size: 13px; color: var(--on-dark-faint); }
   .form :global(.ok) { font-size: 22px; grid-column: 1 / -1; }
+  .form .btn:disabled { background: var(--dark-2); color: var(--on-dark-muted); box-shadow: inset 0 0 0 1px var(--field-edge-dark); cursor: progress; }
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .c-err { display: grid; gap: 6px; padding: 14px 16px; border-radius: 14px; background: var(--dark-2); box-shadow: inset 0 0 0 1px var(--peach); font-size: 15px; }
+  .c-err[hidden] { display: none; }
+  .c-err-alt { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .c-err-alt a { color: var(--on-dark); border-bottom: 1px solid var(--peach); }
   @media (max-width: 860px) { .box { grid-template-columns: 1fr; border-radius: 36px; } }
   @media (max-width: 480px) { .form { grid-template-columns: 1fr; } }
 </style>
