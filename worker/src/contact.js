@@ -1,6 +1,7 @@
 // Заявка с сайта (/api/contact): проверяем поля и отправляем сообщение в Telegram.
 // Секреты в Cloudflare: TELEGRAM_BOT_TOKEN (токен бота от @BotFather) и TELEGRAM_CHAT_ID
 // (куда слать: личный чат, группа или канал, где бот добавлен). В браузер они не попадают.
+// Необязательно: TELEGRAM_THREAD_ID — номер темы в группе с темами (иначе заявки идут в «General»).
 
 const LIMITS = { name: 100, contact: 150, process: 1500, page: 200 };
 
@@ -40,7 +41,12 @@ export async function sendToTelegram(text, env) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     // Без parse_mode: текст посетителя уходит как есть, разметку в нём Telegram не трактует
-    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
+    body: JSON.stringify({
+      chat_id: env.TELEGRAM_CHAT_ID,
+      ...(env.TELEGRAM_THREAD_ID ? { message_thread_id: Number(env.TELEGRAM_THREAD_ID) } : {}),
+      text,
+      disable_web_page_preview: true,
+    }),
     signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) {
